@@ -58070,6 +58070,7 @@ return a / b;`;
       (() => __async(exports, null, function* () {
         yield ready();
         yield setBackend("webgl", { renderToFloatTexture: false });
+        env().set("WEBGL_PACK", true);
         let seconds = 0;
         let interval = null;
         window.createFaceDetector = function createFaceDetector(video, callbacks, canvas) {

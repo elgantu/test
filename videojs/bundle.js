@@ -47302,8 +47302,8 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
       init_dist3();
       (() => __async(exports, null, function* () {
         yield ready();
-        env().set("WEBGL_PACK", false);
         yield setBackend("cpu");
+        env().set("WEBGL_PACK", false);
         let seconds = 0;
         let interval = null;
         window.createFaceDetector = function createFaceDetector(video, callbacks, canvas) {

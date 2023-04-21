@@ -58069,7 +58069,7 @@ return a / b;`;
       init_dist3();
       (() => __async(exports, null, function* () {
         yield ready();
-        yield setBackend("webgl", true);
+        yield setBackend("webgl", false);
         let seconds = 0;
         let interval = null;
         window.createFaceDetector = function createFaceDetector(video, callbacks, canvas) {

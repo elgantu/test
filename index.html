@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/player.css">
+    <link rel="stylesheet" href="css/wss_player.css">
+</head>
+
+<body>
+    <section class="preview__video">
+        <div class="container w-100 h-100">
+            <div class="w-100 h-100 d-flex justify-content-center align-items-center flex-column">
+                <div class="h-65 w-100">
+                    <div class="row p-0 w-100 h-100 m-0">
+                        <div class="col-12 col-lg-6 ps-lg-4 ml_-12">
+                            <div class="card w-100 h-100 border-light-blue bg-dark-gray border-r-10">
+                                <div class="loader-container border-r-10" id="loader-preview">
+                                    <div class="loader"></div>
+                                </div>
+                                <video id="player-preview" class="video-js vjs-wss border-r-10" controls="true" crossOrigin="anonymous" playisline muted preload="auto" style="position: absolute;">
+                                    <p class="vjs-no-js">
+                                      Пожалуйста, включите javascript.
+                                    </p>
+                                  </video>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 mt-3 mt-lg-0 ps-lg-4 ml-12">
+                            <div class="card w-100 h-100 border-light-blue bg-dark-gray border-r-10">
+                                <div class="loader-container border-r-10" id="loader-webcam">
+                                    <div class="loader"></div>
+                                </div>
+                                <canvas id="canvas-webcam" style="
+                                position: absolute;width: 100%;height: 100%;
+                                transform: scale(-1, 1);object-fit: cover;" class="border-r-10">
+                                </canvas>
+                                <video id="webcam-video" playsinline muted autoplay style="width: 100%;height: 100%;position: absolute;">
+                                    <p class="vjs-no-js">
+                                      Пожалуйста, включите javascript.
+                                    </p>
+                                  </video>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-0 w-100 m-0" style="height: 35%;">
+                    <div class="col-12 col-lg-4 mt-lg-5 mt-3">
+                        <div class="card w-100 h-100 border-light-blue border-r-10 bg-dark-blue mh-120">
+                            <div class="container w-100 h-100">
+                                <div class="d-flex justify-content-center align-items-center h-100 w-100">
+                                    <div class="row w-100">
+                                        <div class="col-2">
+                                            <img height="100%" width="100%" src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzEiIHZpZXdCb3g9IjAgMCAyOCAzMSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0IDE1LjI1QzEyLjU5MzggMTUuMjUgMTEuMzYzMyAxNC45NTcgMTAuMTkxNCAxNC4yNTM5QzkuMDE5NTMgMTMuNjA5NCA4LjE0MDYyIDEyLjczMDUgNy40OTYwOSAxMS41NTg2QzYuNzkyOTcgMTAuMzg2NyA2LjUgOS4xNTYyNSA2LjUgNy43NUM2LjUgNi40MDIzNCA2Ljc5Mjk3IDUuMTcxODggNy40OTYwOSA0QzguMTQwNjIgMi44MjgxMiA5LjAxOTUzIDEuOTQ5MjIgMTAuMTkxNCAxLjI0NjA5QzExLjM2MzMgMC42MDE1NjIgMTIuNTkzOCAwLjI1IDE0IDAuMjVDMTUuMzQ3NyAwLjI1IDE2LjU3ODEgMC42MDE1NjIgMTcuNzUgMS4yNDYwOUMxOC45MjE5IDEuOTQ5MjIgMTkuODAwOCAyLjgyODEyIDIwLjUwMzkgNEMyMS4xNDg0IDUuMTcxODggMjEuNSA2LjQwMjM0IDIxLjUgNy43NUMyMS41IDkuMTU2MjUgMjEuMTQ4NCAxMC4zODY3IDIwLjUwMzkgMTEuNTU4NkMxOS44MDA4IDEyLjczMDUgMTguOTIxOSAxMy42MDk0IDE3Ljc1IDE0LjI1MzlDMTYuNTc4MSAxNC45NTcgMTUuMzQ3NyAxNS4yNSAxNCAxNS4yNVpNMTkuMjczNCAxNy4xMjVDMjAuNjc5NyAxNy4xMjUgMjEuOTY4OCAxNy40NzY2IDIzLjE5OTIgMTguMTc5N0MyNC4zNzExIDE4Ljg4MjggMjUuMzY3MiAxOS44Nzg5IDI2LjA3MDMgMjEuMDUwOEMyNi43NzM0IDIyLjI4MTIgMjcuMTI1IDIzLjU3MDMgMjcuMTI1IDI0Ljk3NjZWMjcuNDM3NUMyNy4xMjUgMjguMjU3OCAyNi44MzIgMjguOTAyMyAyNi4zMDQ3IDI5LjQyOTdDMjUuNzE4OCAzMC4wMTU2IDI1LjA3NDIgMzAuMjUgMjQuMzEyNSAzMC4yNUgzLjY4NzVDMi44NjcxOSAzMC4yNSAyLjIyMjY2IDMwLjAxNTYgMS42OTUzMSAyOS40Mjk3QzEuMTA5MzggMjguOTAyMyAwLjg3NSAyOC4yNTc4IDAuODc1IDI3LjQzNzVWMjQuOTc2NkMwLjg3NSAyMy41NzAzIDEuMjI2NTYgMjIuMjgxMiAxLjkyOTY5IDIxLjA1MDhDMi42MzI4MSAxOS44Nzg5IDMuNTcwMzEgMTguODgyOCA0LjgwMDc4IDE4LjE3OTdDNS45NzI2NiAxNy40NzY2IDcuMzIwMzEgMTcuMTI1IDguNzI2NTYgMTcuMTI1SDkuNzIyNjZDMTEuMDcwMyAxNy43Njk1IDEyLjQ3NjYgMTguMDYyNSAxNCAxOC4wNjI1QzE1LjQ2NDggMTguMDYyNSAxNi44NzExIDE3Ljc2OTUgMTguMjc3MyAxNy4xMjVIMTkuMjczNFoiIGZpbGw9IiM1N0I4RjkiLz4KPC9zdmc+Cg=='
+                                            />
+                                        </div>
+                                        <div class="col-3 text-white fs-1 fw-bold d-flex align-items-center justify-content-center" id="faces">
+                                            0
+                                        </div>
+                                        <div class="col-7 text-light-blue fs-5 d-flex align-items-center justify-content-start">
+                                            Лица в&nbsp;камере
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4 mt-lg-5 mt-3">
+                        <div class="card w-100 h-100 border-7C64FA border-r-10 bg-dark-blue mh-120">
+                            <div class="container w-100 h-100">
+                                <div class="d-flex justify-content-center align-items-center h-100 w-100">
+                                    <div class="row w-100">
+                                        <div class="col-2">
+                                            <img height="100%" width="100%" src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzQiIGhlaWdodD0iMjMiIHZpZXdCb3g9IjAgMCAzNCAyMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMzLjQ2NDggMTAuMzQzOEMzMy42OTkyIDEwLjgxMjUgMzMuODc1IDExLjI4MTIgMzMuODc1IDExLjc1QzMzLjg3NSAxMi4yNzczIDMzLjY5OTIgMTIuNzQ2MSAzMy40NjQ4IDEzLjE1NjJDMzEuNzY1NiAxNi4wMjczIDI5LjQ4MDUgMTguMzEyNSAyNi42MDk0IDE5Ljk1MzFDMjMuNjc5NyAyMS43MTA5IDIwLjQ1NyAyMi41MzEyIDE3IDIyLjUzMTJDMTMuNDg0NCAyMi41MzEyIDEwLjMyMDMgMjEuNzEwOSA3LjM5MDYyIDE5Ljk1MzFDNC40NjA5NCAxOC4zMTI1IDIuMTc1NzggMTYuMDI3MyAwLjUzNTE1NiAxMy4xNTYyQzAuMjQyMTg4IDEyLjc0NjEgMC4xMjUgMTIuMjc3MyAwLjEyNSAxMS43NUMwLjEyNSAxMS4yODEyIDAuMjQyMTg4IDEwLjgxMjUgMC41MzUxNTYgMTAuMzQzOEMyLjE3NTc4IDcuNTMxMjUgNC40NjA5NCA1LjI0NjA5IDcuMzkwNjIgMy41NDY4OEMxMC4zMjAzIDEuODQ3NjYgMTMuNDg0NCAwLjk2ODc1IDE3IDAuOTY4NzVDMjAuNDU3IDAuOTY4NzUgMjMuNjc5NyAxLjg0NzY2IDI2LjYwOTQgMy41NDY4OEMyOS40ODA1IDUuMjQ2MDkgMzEuNzY1NiA3LjUzMTI1IDMzLjQ2NDggMTAuMzQzOFpNMTcgMTkuNzE4OEMxOC40MDYyIDE5LjcxODggMTkuNzUzOSAxOS4zNjcyIDIwLjk4NDQgMTguNjY0MUMyMi4xNTYyIDE3Ljk2MDkgMjMuMTUyMyAxNi45NjQ4IDIzLjg1NTUgMTUuNzM0NEMyNC41NTg2IDE0LjU2MjUgMjQuOTY4OCAxMy4yMTQ4IDI0Ljk2ODggMTEuNzVDMjQuOTY4OCAxMC4zNDM4IDI0LjU1ODYgOC45OTYwOSAyMy44NTU1IDcuNzY1NjJDMjMuMTUyMyA2LjU5Mzc1IDIyLjE1NjIgNS41OTc2NiAyMC45ODQ0IDQuODk0NTNDMTkuNzUzOSA0LjE5MTQxIDE4LjQwNjIgMy43ODEyNSAxNyAzLjc4MTI1QzE1LjUzNTIgMy43ODEyNSAxNC4xODc1IDQuMTkxNDEgMTMuMDE1NiA0Ljg5NDUzQzExLjc4NTIgNS41OTc2NiAxMC43ODkxIDYuNTkzNzUgMTAuMDg1OSA3Ljc2NTYyQzkuMzgyODEgOC45OTYwOSA5LjAzMTI1IDEwLjM0MzggOS4wMzEyNSAxMS43NUM5LjAzMTI1IDEzLjIxNDggOS4zODI4MSAxNC41NjI1IDEwLjA4NTkgMTUuNzM0NEMxMC43ODkxIDE2Ljk2NDggMTEuNzg1MiAxNy45NjA5IDEzLjAxNTYgMTguNjY0MUMxNC4xODc1IDE5LjM2NzIgMTUuNTM1MiAxOS43MTg4IDE3IDE5LjcxODhaTTIzLjA5MzggMTEuNzVDMjMuMDkzOCAxMC4xMDk0IDIyLjQ0OTIgOC42NDQ1MyAyMS4yNzczIDcuNDcyNjZDMjAuMTA1NSA2LjMwMDc4IDE4LjY0MDYgNS42NTYyNSAxNyA1LjY1NjI1QzE1Ljk0NTMgNS42NTYyNSAxNS4wMDc4IDUuODkwNjIgMTQuMTI4OSA2LjM1OTM4QzE0LjgzMiA2LjM1OTM4IDE1LjQxOCA2LjY1MjM0IDE1Ljg4NjcgNy4xMjEwOUMxNi4zNTU1IDcuNTg5ODQgMTYuNjQ4NCA4LjE3NTc4IDE2LjY0ODQgOC44Nzg5MUMxNi42NDg0IDkuNTgyMDMgMTYuMzU1NSAxMC4yMjY2IDE1Ljg4NjcgMTAuNjk1M0MxNS40MTggMTEuMTY0MSAxNC44MzIgMTEuMzk4NCAxNC4xMjg5IDExLjM5ODRDMTMuNDI1OCAxMS4zOTg0IDEyLjc4MTIgMTEuMTY0MSAxMi4zMTI1IDEwLjY5NTNDMTEuODQzOCAxMC4yMjY2IDExLjYwOTQgOS41ODIwMyAxMS42MDk0IDguODc4OTFDMTEuMTQwNiA5LjgxNjQxIDEwLjkwNjIgMTAuNzUzOSAxMC45MDYyIDExLjc1QzEwLjkwNjIgMTMuNDQ5MiAxMS40OTIyIDE0LjkxNDEgMTIuNjY0MSAxNi4wODU5QzEzLjgzNTkgMTcuMjU3OCAxNS4zMDA4IDE3Ljg0MzggMTcgMTcuODQzOEMxOC42NDA2IDE3Ljg0MzggMjAuMTA1NSAxNy4yNTc4IDIxLjI3NzMgMTYuMDg1OUMyMi40NDkyIDE0LjkxNDEgMjMuMDkzOCAxMy40NDkyIDIzLjA5MzggMTEuNzVaIiBmaWxsPSIjN0M2OUY2Ii8+Cjwvc3ZnPgo='
+                                            />
+                                        </div>
+                                        <div class="col-3 text-white fs-1 fw-bold d-flex align-items-center justify-content-center" id="active-faces">
+                                            0
+                                        </div>
+                                        <div class="col-7 fs-5 d-flex align-items-center justify-content-start text-7C64FA">
+                                            Лица с&nbsp;вниманием
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4 mt-lg-5 mt-3">
+                        <div class="card w-100 h-100 border-purple border-r-10 bg-dark-blue mh-120">
+                            <div class="container w-100 h-100">
+                                <div class="d-flex justify-content-center align-items-center h-100 w-100">
+                                    <div class="row w-100">
+                                        <div class="col-2">
+                                            <img height="100%" width="100%" src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzQiIGhlaWdodD0iMzEiIHZpZXdCb3g9IjAgMCAzNCAzMSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMwLjA2NjQgNi4xOTkyMkwyNC40NDE0IDEwLjY1MjNMMjQuNSAxMS4wNjI1QzI0LjUgMTEuODgyOCAyNC4yMDcgMTIuNTI3MyAyMy42Nzk3IDEzLjA1NDdDMjMuMDkzOCAxMy42NDA2IDIyLjQ0OTIgMTMuODc1IDIxLjY4NzUgMTMuODc1QzIwLjg2NzIgMTMuODc1IDIwLjIyMjcgMTMuNjQwNiAxOS42OTUzIDEzLjA1NDdDMTkuMTA5NCAxMi41MjczIDE4Ljg3NSAxMS44ODI4IDE4Ljg3NSAxMS4wNjI1TDE4LjkzMzYgMTAuNjUyM0wxMy4zMDg2IDYuMTk5MjJDMTIuOTU3IDYuMzE2NDEgMTIuNjY0MSA2LjM3NSAxMi4zMTI1IDYuMzc1QzEyLjA3ODEgNi4zNzUgMTEuODQzOCA2LjM3NSAxMS42MDk0IDYuMjU3ODFMNS42MzI4MSAxMi4yMzQ0QzUuNjkxNDEgMTIuNDY4OCA1Ljc1IDEyLjcwMzEgNS43NSAxMi45Mzc1QzUuNzUgMTMuNzU3OCA1LjQ1NzAzIDE0LjQwMjMgNC45Mjk2OSAxNC45Mjk3QzQuMzQzNzUgMTUuNTE1NiAzLjY5OTIyIDE1Ljc1IDIuOTM3NSAxNS43NUMyLjExNzE5IDE1Ljc1IDEuNDcyNjYgMTUuNTE1NiAwLjk0NTMxMiAxNC45Mjk3QzAuMzU5Mzc1IDE0LjQwMjMgMC4xMjUgMTMuNzU3OCAwLjEyNSAxMi45Mzc1QzAuMTI1IDEyLjE3NTggMC4zNTkzNzUgMTEuNTMxMiAwLjk0NTMxMiAxMC45NDUzQzEuNDcyNjYgMTAuNDE4IDIuMTE3MTkgMTAuMTI1IDIuOTM3NSAxMC4xMjVDMy4xNzE4OCAxMC4xMjUgMy40MDYyNSAxMC4xODM2IDMuNjQwNjIgMTAuMjQyMkw5LjYxNzE5IDQuMjY1NjJDOS41IDQuMDMxMjUgOS41IDMuNzk2ODggOS41IDMuNTYyNUM5LjUgMi44MDA3OCA5LjczNDM4IDIuMTU2MjUgMTAuMzIwMyAxLjU3MDMxQzEwLjg0NzcgMS4wNDI5NyAxMS40OTIyIDAuNzUgMTIuMzEyNSAwLjc1QzEzLjA3NDIgMC43NSAxMy43MTg4IDEuMDQyOTcgMTQuMzA0NyAxLjU3MDMxQzE0LjgzMiAyLjE1NjI1IDE1LjEyNSAyLjgwMDc4IDE1LjEyNSAzLjU2MjVMMTUuMDY2NCAzLjk3MjY2TDIwLjY5MTQgOC40MjU3OEMyMC45ODQ0IDguMzA4NTkgMjEuMzM1OSA4LjI1IDIxLjY4NzUgOC4yNUMyMi4wMzkxIDguMjUgMjIuMzMyIDguMzA4NTkgMjIuNjgzNiA4LjQyNTc4TDI4LjMwODYgMy45NzI2NkwyOC4yNSAzLjU2MjVDMjguMjUgMi44MDA3OCAyOC40ODQ0IDIuMTU2MjUgMjkuMDcwMyAxLjU3MDMxQzI5LjU5NzcgMS4wNDI5NyAzMC4yNDIyIDAuNzUgMzEuMDYyNSAwLjc1QzMxLjgyNDIgMC43NSAzMi40Njg4IDEuMDQyOTcgMzMuMDU0NyAxLjU3MDMxQzMzLjU4MiAyLjE1NjI1IDMzLjg3NSAyLjgwMDc4IDMzLjg3NSAzLjU2MjVDMzMuODc1IDQuMzgyODEgMzMuNTgyIDUuMDI3MzQgMzMuMDU0NyA1LjU1NDY5QzMyLjQ2ODggNi4xNDA2MiAzMS44MjQyIDYuMzc1IDMxLjA2MjUgNi4zNzVDMzAuNzEwOSA2LjM3NSAzMC4zNTk0IDYuMzE2NDEgMzAuMDY2NCA2LjE5OTIyWk0yMy41NjI1IDE5LjVDMjMuNzk2OSAxOS41IDI0LjAzMTIgMTkuNjE3MiAyNC4yMDcgMTkuNzkzQzI0LjM4MjggMTkuOTY4OCAyNC41IDIwLjIwMzEgMjQuNSAyMC40Mzc1VjI5LjgxMjVDMjQuNSAzMC4xMDU1IDI0LjM4MjggMzAuMzM5OCAyNC4yMDcgMzAuNTE1NkMyNC4wMzEyIDMwLjY5MTQgMjMuNzk2OSAzMC43NSAyMy41NjI1IDMwLjc1SDE5LjgxMjVDMTkuNTE5NSAzMC43NSAxOS4yODUyIDMwLjY5MTQgMTkuMTA5NCAzMC41MTU2QzE4LjkzMzYgMzAuMzM5OCAxOC44NzUgMzAuMTA1NSAxOC44NzUgMjkuODEyNVYyMC40Mzc1QzE4Ljg3NSAyMC4yMDMxIDE4LjkzMzYgMTkuOTY4OCAxOS4xMDk0IDE5Ljc5M0MxOS4yODUyIDE5LjYxNzIgMTkuNTE5NSAxOS41IDE5LjgxMjUgMTkuNUgyMy41NjI1Wk0zMi45Mzc1IDEyQzMzLjE3MTkgMTIgMzMuNDA2MiAxMi4xMTcyIDMzLjU4MiAxMi4yOTNDMzMuNzU3OCAxMi40Njg4IDMzLjg3NSAxMi43MDMxIDMzLjg3NSAxMi45Mzc1VjI5LjgxMjVDMzMuODc1IDMwLjEwNTUgMzMuNzU3OCAzMC4zMzk4IDMzLjU4MiAzMC41MTU2QzMzLjQwNjIgMzAuNjkxNCAzMy4xNzE5IDMwLjc1IDMyLjkzNzUgMzAuNzVIMjkuMTg3NUMyOC44OTQ1IDMwLjc1IDI4LjY2MDIgMzAuNjkxNCAyOC40ODQ0IDMwLjUxNTZDMjguMzA4NiAzMC4zMzk4IDI4LjI1IDMwLjEwNTUgMjguMjUgMjkuODEyNVYxMi45Mzc1QzI4LjI1IDEyLjcwMzEgMjguMzA4NiAxMi40Njg4IDI4LjQ4NDQgMTIuMjkzQzI4LjY2MDIgMTIuMTE3MiAyOC44OTQ1IDEyIDI5LjE4NzUgMTJIMzIuOTM3NVpNMTQuMTg3NSAxMkMxNC40MjE5IDEyIDE0LjY1NjIgMTIuMTE3MiAxNC44MzIgMTIuMjkzQzE1LjAwNzggMTIuNDY4OCAxNS4xMjUgMTIuNzAzMSAxNS4xMjUgMTIuOTM3NVYyOS44MTI1QzE1LjEyNSAzMC4xMDU1IDE1LjAwNzggMzAuMzM5OCAxNC44MzIgMzAuNTE1NkMxNC42NTYyIDMwLjY5MTQgMTQuNDIxOSAzMC43NSAxNC4xODc1IDMwLjc1SDEwLjQzNzVDMTAuMTQ0NSAzMC43NSA5LjkxMDE2IDMwLjY5MTQgOS43MzQzOCAzMC41MTU2QzkuNTU4NTkgMzAuMzM5OCA5LjUgMzAuMTA1NSA5LjUgMjkuODEyNVYxMi45Mzc1QzkuNSAxMi43MDMxIDkuNTU4NTkgMTIuNDY4OCA5LjczNDM4IDEyLjI5M0M5LjkxMDE2IDEyLjExNzIgMTAuMTQ0NSAxMiAxMC40Mzc1IDEySDE0LjE4NzVaTTQuODEyNSAyMS4zNzVDNS4wNDY4OCAyMS4zNzUgNS4yODEyNSAyMS40OTIyIDUuNDU3MDMgMjEuNjY4QzUuNjMyODEgMjEuODQzOCA1Ljc1IDIyLjA3ODEgNS43NSAyMi4zMTI1VjI5LjgxMjVDNS43NSAzMC4xMDU1IDUuNjMyODEgMzAuMzM5OCA1LjQ1NzAzIDMwLjUxNTZDNS4yODEyNSAzMC42OTE0IDUuMDQ2ODggMzAuNzUgNC44MTI1IDMwLjc1SDEuMDYyNUMwLjc2OTUzMSAzMC43NSAwLjUzNTE1NiAzMC42OTE0IDAuMzU5Mzc1IDMwLjUxNTZDMC4xODM1OTQgMzAuMzM5OCAwLjEyNSAzMC4xMDU1IDAuMTI1IDI5LjgxMjVWMjIuMzEyNUMwLjEyNSAyMi4wNzgxIDAuMTgzNTk0IDIxLjg0MzggMC4zNTkzNzUgMjEuNjY4QzAuNTM1MTU2IDIxLjQ5MjIgMC43Njk1MzEgMjEuMzc1IDEuMDYyNSAyMS4zNzVINC44MTI1WiIgZmlsbD0iIzU4MzlGNCIvPgo8L3N2Zz4K'
+                                            />
+                                        </div>
+                                        <div class="col-3 text-white fs-1 fw-bold d-flex align-items-center justify-content-center" id="index-attention">
+                                            0
+                                        </div>
+                                        <div class="col-7 fs-5 d-flex align-items-center justify-content-start text-purple">
+                                            Индекс внимательности
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="videojs/bundle.js">
+    </script>
+    <script src="videojs/videojs.js">
+    </script>
+    <script src="videojs/libplayer.js">
+    </script>
+    <script src="videojs/app.js">
+    </script>
+</body>
+
+</html>

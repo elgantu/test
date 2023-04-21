@@ -210,7 +210,7 @@
                 const canvas = document.getElementById(initialData.canvasWebcamElementId)
                 canvas.style.zIndex = 2;
                 Player.currentTime(0)
-                await window.createFaceDetector(player, { onIndex: onIndex, onSecondIndex: onSecondIndex })
+                await window.createFaceDetector(player, { onIndex: onIndex, onSecondIndex: onSecondIndex }, canvas)
 
 
                 setTimeout(() => {

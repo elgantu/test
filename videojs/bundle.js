@@ -35075,10 +35075,10 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
   function createDetector() {
     return __async(this, null, function* () {
       return $t(Yt.MediaPipeFaceMesh, {
-        runtime: "tfjs",
+        runtime: "mediapipe",
         refineLandmarks: true,
-        maxFaces: 1
-        // solutionPath: `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619`
+        maxFaces: 1,
+        solutionPath: `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619`
       });
     });
   }
@@ -38002,7 +38002,6 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
           __publicField(this, "happiness", 0);
           __publicField(this, "amazement", 0);
           __publicField(this, "eyesClosed", false);
-          __publicField(this, "eyesClosedWithFrames", false);
           __publicField(this, "eyesClosedFrames", 0);
           __publicField(this, "eyesClosedTime", /* @__PURE__ */ new Date());
           __publicField(this, "blinkTime", 0);
@@ -38067,10 +38066,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
           let eyebrowsHeight = this.calculateEyebrowsHeight(face);
           let smile = this.calculateSmile(face);
           let eyesHeight = this.calculateEyesHeight(face);
-          let attention = headAngleOX < 36 && !this.eyesClosed ? 1 : 0;
-          if (attention == 1) {
-            attention = headAngleOY < 30 && !this.eyesClosed ? 1 : 0;
-          }
+          const attention = headAngleOX < 36 && !this.eyesClosed ? 1 : 0;
           this.handleAttention(attention);
           if (this.initialHeadHeight !== null) {
             const scaleCoefficient = this.headHeight / this.initialHeadHeight;
@@ -38144,21 +38140,15 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
         }
         handleEyes(eyesHeight) {
           const { left, right } = eyesHeight;
-          console.log("Left: " + left);
-          console.log("Left: " + right);
-          if ((left < 7 || right < 7) && !this.eyesClosed && !this.eyesClosedWithFrames) {
-            this.eyesClosedWithFrames = true;
+          if ((left < 5 || right < 5) && !this.eyesClosed) {
+            this.eyesClosed = true;
             this.eyesClosedFrames = 0;
             this.eyesClosedTime = /* @__PURE__ */ new Date();
-          } else if ((left < 7 || right < 7) && this.eyesClosedWithFrames) {
-            if (this.eyesClosedFrames > 15) {
-              this.eyesClosed = true;
-            }
+          } else if ((left < 5 || right < 5) && this.eyesClosed) {
             this.eyesClosedFrames++;
-          } else if (this.eyesClosed && this.eyesClosedWithFrames) {
-            this.eyesClosedWithFrames = false;
+          } else if (this.eyesClosed) {
             this.eyesClosed = false;
-            if (this.eyesClosedFrames < 20) {
+            if (this.eyesClosedFrames < 15) {
               this.blinks++;
               this.blinkTime = (/* @__PURE__ */ new Date()).getTime() - this.eyesClosedTime.getTime();
               this.blinked = true;
@@ -58070,8 +58060,6 @@ return a / b;`;
       (() => __async(exports, null, function* () {
         yield ready();
         yield setBackend("webgl");
-        env().registerFlag("WEBGL_PACK", () => false);
-        env().set("WEBGL_PACK", false);
         let seconds = 0;
         let interval = null;
         window.createFaceDetector = function createFaceDetector(video, callbacks, canvas) {

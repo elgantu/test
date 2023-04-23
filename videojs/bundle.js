@@ -37875,7 +37875,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
           var _a;
           this.video = video;
           this.canvas = canvas;
-          this.ctx = (_a = this.canvas) == null ? void 0 : _a.getContext("webgl");
+          this.ctx = (_a = this.canvas) == null ? void 0 : _a.getContext("2d");
         }
         /**
          * Initiate a Camera instance and wait for the camera stream to be ready.

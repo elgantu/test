@@ -38480,7 +38480,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
     if (webGLVersion === 1) {
       return canvas.getContext("webgl", WEBGL_ATTRIBUTES) || canvas.getContext("experimental-webgl", WEBGL_ATTRIBUTES);
     }
-    return canvas.getContext("webgl2", WEBGL_ATTRIBUTES);
+    return canvas.getContext("webgl", WEBGL_ATTRIBUTES);
   }
   var contexts, WEBGL_ATTRIBUTES;
   var init_canvas_util = __esm({

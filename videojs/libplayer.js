@@ -84,7 +84,7 @@
                 }
 
                 function onSecondIndex(index) {
-                    console.log(index)
+                    // console.log(index)
                 }
 
                 const canvas = document.getElementById(initialData.canvasElementId)
@@ -205,6 +205,7 @@
                 }
 
                 function onSecondIndex(index) {
+                    console.log(index)
                 }
 
                 const canvas = document.getElementById(initialData.canvasWebcamElementId)
@@ -307,27 +308,6 @@
             PC.videoPlayingFromButton = false
             PC.videoPlaying = false
         })
-
-        // document.addEventListener("DOMContentLoaded", function() {
-        //     const sectionOne = document.querySelector('.preview__video');
-        //     const options = {
-        //         rootMargin: "40px",
-        //         threshold: 1.0,
-        //     };
-
-        //     const observer = new IntersectionObserver(function(entries, observer) {
-        //         entries.forEach(entry => {
-        //             if(entry.isIntersecting){
-        //                 Player.play()
-        //             }
-        //             if(!entry.isIntersecting){
-        //                 Player.pause()
-        //             }
-        //         });
-        //     }, options);
-
-        //     observer.observe(sectionOne);
-        // })
 
         const interval = setInterval(() => {
             PC.seconds += 1;

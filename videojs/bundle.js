@@ -17648,14 +17648,14 @@
     } catch (t3) {
     }
   var Zh = "/";
-  var tf = "tensorflowjs_models";
+  var tf2 = "tensorflowjs_models";
   var ef = "info";
   var nf = "model_topology";
   var rf = "weight_specs";
   var of = "weight_data";
   var af = "model_metadata";
   function uf(t3) {
-    return { info: [tf, t3, ef].join(Zh), topology: [tf, t3, nf].join(Zh), weightSpecs: [tf, t3, rf].join(Zh), weightData: [tf, t3, of].join(Zh), modelMetadata: [tf, t3, af].join(Zh) };
+    return { info: [tf2, t3, ef].join(Zh), topology: [tf2, t3, nf].join(Zh), weightSpecs: [tf2, t3, rf].join(Zh), weightData: [tf2, t3, of].join(Zh), modelMetadata: [tf2, t3, af].join(Zh) };
   }
   function sf(t3) {
     var e2 = t3.split(Zh);
@@ -17731,7 +17731,7 @@
       return n(this, void 0, void 0, function() {
         var t4, e2, n2, o2, a2, i2;
         return r(this, function(r2) {
-          for (t4 = {}, e2 = tf + Zh, n2 = Zh + ef, o2 = 0; o2 < this.LS.length; ++o2)
+          for (t4 = {}, e2 = tf2 + Zh, n2 = Zh + ef, o2 = 0; o2 < this.LS.length; ++o2)
             (a2 = this.LS.key(o2)).startsWith(e2) && a2.endsWith(n2) && (i2 = sf(a2), t4[i2] = JSON.parse(this.LS.getItem(a2)));
           return [2, t4];
         });
@@ -54046,7 +54046,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
   };
   async function createDetector() {
     return $t2(Yt2.MediaPipeFaceMesh, {
-      runtime: "mediapipe",
+      runtime: "tfjs",
       refineLandmarks: true,
       maxFaces: 1,
       solutionPath: `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619`

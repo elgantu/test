@@ -73973,7 +73973,7 @@ return a / b;`;
       if (values[0] < values[1]) {
         attentionClasses = false;
       }
-      let attention = (this.eyesClosedFrames < 30 || !this.eyesClosed) && (this.eyesClosedFrames < 30 && attentionClasses) ? 1 : 0;
+      let attention = attentionClasses ? 1 : 0;
       this.handleAttention(attention);
       if (this.initialHeadHeight !== null) {
         const scaleCoefficient = this.headHeight / this.initialHeadHeight;

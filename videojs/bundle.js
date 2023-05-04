@@ -29401,13 +29401,13 @@
     disposeData(dataId, force) {
       return notYetImplemented("disposeData");
     }
-    write(values, shape, dtype) {
+    write(values2, shape, dtype) {
       return notYetImplemented("write");
     }
-    move(dataId, values, shape, dtype, refCount) {
+    move(dataId, values2, shape, dtype, refCount) {
       return notYetImplemented("move");
     }
-    createTensorFromGPUData(values, shape, dtype) {
+    createTensorFromGPUData(values2, shape, dtype) {
       return notYetImplemented("createTensorFromGPUData");
     }
     memory() {
@@ -29645,32 +29645,32 @@
     return { newShape, keptDims };
   }
   function getTypedArrayFromDType(dtype, size) {
-    let values = null;
+    let values2 = null;
     if (dtype == null || dtype === "float32") {
-      values = new Float32Array(size);
+      values2 = new Float32Array(size);
     } else if (dtype === "int32") {
-      values = new Int32Array(size);
+      values2 = new Int32Array(size);
     } else if (dtype === "bool") {
-      values = new Uint8Array(size);
+      values2 = new Uint8Array(size);
     } else {
       throw new Error(`Unknown data type ${dtype}`);
     }
-    return values;
+    return values2;
   }
   function getArrayFromDType(dtype, size) {
-    let values = null;
+    let values2 = null;
     if (dtype == null || dtype === "float32") {
-      values = new Float32Array(size);
+      values2 = new Float32Array(size);
     } else if (dtype === "int32") {
-      values = new Int32Array(size);
+      values2 = new Int32Array(size);
     } else if (dtype === "bool") {
-      values = new Uint8Array(size);
+      values2 = new Uint8Array(size);
     } else if (dtype === "string") {
-      values = new Array(size);
+      values2 = new Array(size);
     } else {
       throw new Error(`Unknown data type ${dtype}`);
     }
-    return values;
+    return values2;
   }
   function checkConversionForErrors(vals, dtype) {
     for (let i2 = 0; i2 < vals.length; i2++) {
@@ -29726,19 +29726,19 @@
   function isNumber(value) {
     return typeof value === "number";
   }
-  function inferDtype(values) {
-    if (Array.isArray(values)) {
-      return inferDtype(values[0]);
+  function inferDtype(values2) {
+    if (Array.isArray(values2)) {
+      return inferDtype(values2[0]);
     }
-    if (values instanceof Float32Array) {
+    if (values2 instanceof Float32Array) {
       return "float32";
-    } else if (values instanceof Int32Array || values instanceof Uint8Array || values instanceof Uint8ClampedArray) {
+    } else if (values2 instanceof Int32Array || values2 instanceof Uint8Array || values2 instanceof Uint8ClampedArray) {
       return "int32";
-    } else if (isNumber(values)) {
+    } else if (isNumber(values2)) {
       return "float32";
-    } else if (isString(values)) {
+    } else if (isString(values2)) {
       return "string";
-    } else if (isBoolean(values)) {
+    } else if (isBoolean(values2)) {
       return "bool";
     }
     return "float32";
@@ -30877,18 +30877,18 @@
 
   // node_modules/@tensorflow/tfjs-core/dist/tensor.js
   var TensorBuffer = class {
-    constructor(shape, dtype, values) {
+    constructor(shape, dtype, values2) {
       this.dtype = dtype;
       this.shape = shape.slice();
       this.size = sizeFromShape(shape);
-      if (values != null) {
-        const n2 = values.length;
+      if (values2 != null) {
+        const n2 = values2.length;
         assert2(n2 === this.size, () => `Length of values '${n2}' does not match the size inferred by the shape '${this.size}'.`);
       }
       if (dtype === "complex64") {
         throw new Error(`complex64 dtype TensorBuffers are not supported. Please create a TensorBuffer for the real and imaginary parts separately and call tf.complex(real, imag).`);
       }
-      this.values = values || getArrayFromDType(dtype, this.size);
+      this.values = values2 || getArrayFromDType(dtype, this.size);
       this.strides = computeStrides(shape);
     }
     /**
@@ -31550,11 +31550,11 @@
     moveData(backend, dataId) {
       const info = this.state.tensorInfo.get(dataId);
       const srcBackend = info.backend;
-      const values = this.readSync(dataId);
+      const values2 = this.readSync(dataId);
       const refCount = srcBackend.refCount(dataId);
       srcBackend.disposeData(dataId, true);
       info.backend = backend;
-      backend.move(dataId, values, info.shape, info.dtype, refCount);
+      backend.move(dataId, values2, info.shape, info.dtype, refCount);
       if (this.shouldCheckForMemLeaks()) {
         this.state.numDataMovesStack[this.state.numDataMovesStack.length - 1]++;
       }
@@ -31717,7 +31717,7 @@
           if (!isTapeOn) {
             return;
           }
-          saved = tensors.map((tensor2) => this.keep(this.clone(tensor2)));
+          saved = tensors.map((tensor3) => this.keep(this.clone(tensor3)));
         };
         kernelFunc = () => {
           const numDataIdsBefore = this.backend.numDataIds();
@@ -31772,7 +31772,7 @@
      * @param tensors the list of tensors to save.
      */
     saveTensorsForBackwardMode(tensors) {
-      const saved = tensors.map((tensor2) => this.keep(this.clone(tensor2)));
+      const saved = tensors.map((tensor3) => this.keep(this.clone(tensor3)));
       return saved;
     }
     /**
@@ -31804,15 +31804,15 @@
      * tensor with the provided shape, dtype and values. It always
      * creates a new data id and writes the values to the underlying backend.
      */
-    makeTensor(values, shape, dtype, backend) {
-      if (values == null) {
+    makeTensor(values2, shape, dtype, backend) {
+      if (values2 == null) {
         throw new Error("Values passed to engine.makeTensor() are null");
       }
       dtype = dtype || "float32";
       backend = backend || this.backend;
-      let backendVals = values;
-      if (dtype === "string" && isString(values[0])) {
-        backendVals = values.map((d2) => encodeString(d2));
+      let backendVals = values2;
+      if (dtype === "string" && isString(values2[0])) {
+        backendVals = values2.map((d2) => encodeString(d2));
       }
       const dataId = backend.write(backendVals, shape, dtype);
       const t3 = new Tensor(shape, dtype, dataId, this.nextTensorId());
@@ -32019,16 +32019,16 @@
       const tensorsToTrackInParent = getTensorsInContainer(result);
       const tensorsToTrackInParentSet = new Set(tensorsToTrackInParent.map((t3) => t3.id));
       for (let i2 = 0; i2 < this.state.activeScope.track.length; i2++) {
-        const tensor2 = this.state.activeScope.track[i2];
-        if (!tensor2.kept && !tensorsToTrackInParentSet.has(tensor2.id)) {
-          tensor2.dispose();
+        const tensor3 = this.state.activeScope.track[i2];
+        if (!tensor3.kept && !tensorsToTrackInParentSet.has(tensor3.id)) {
+          tensor3.dispose();
         }
       }
       const oldScope = this.state.scopeStack.pop();
       this.state.activeScope = this.state.scopeStack.length === 0 ? null : this.state.scopeStack[this.state.scopeStack.length - 1];
-      tensorsToTrackInParent.forEach((tensor2) => {
-        if (!tensor2.kept && tensor2.scopeId === oldScope.id) {
-          this.track(tensor2);
+      tensorsToTrackInParent.forEach((tensor3) => {
+        if (!tensor3.kept && tensor3.scopeId === oldScope.id) {
+          this.track(tensor3);
         }
       });
     }
@@ -32063,8 +32063,8 @@
         const grads = xs2.map((x2) => accumulatedGradientMap[x2.id]);
         if (this.state.gradientDepth === 0) {
           this.state.activeTape.forEach((node) => {
-            for (const tensor2 of node.saved) {
-              tensor2.dispose();
+            for (const tensor3 of node.saved) {
+              tensor3.dispose();
             }
           });
           this.state.activeTape = null;
@@ -32161,8 +32161,8 @@
   Engine.nextTensorId = 0;
   Engine.nextVariableId = 0;
   function ones(shape) {
-    const values = makeOnesTypedArray(sizeFromShape(shape), "float32");
-    return ENGINE.makeTensor(values, shape, "float32");
+    const values2 = makeOnesTypedArray(sizeFromShape(shape), "float32");
+    return ENGINE.makeTensor(values2, shape, "float32");
   }
   function getOrMakeEngine() {
     const ns2 = getGlobalNamespace();
@@ -32311,8 +32311,8 @@
       x2 = [x2];
     }
     const skipTypedArray = true;
-    const values = inferredDtype !== "string" ? toTypedArray(x2, inferredDtype) : flatten2(x2, [], skipTypedArray);
-    return ENGINE.makeTensor(values, inferredShape, inferredDtype);
+    const values2 = inferredDtype !== "string" ? toTypedArray(x2, inferredDtype) : flatten2(x2, [], skipTypedArray);
+    return ENGINE.makeTensor(values2, inferredShape, inferredDtype);
   }
   function convertToTensorArray(arg, argName, functionName, parseAsDtype = "numeric") {
     if (!Array.isArray(arg)) {
@@ -32364,19 +32364,19 @@
   var complex = /* @__PURE__ */ op({ complex_ });
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/tensor_ops_util.js
-  function makeTensor(values, shape, inferredShape, dtype) {
+  function makeTensor(values2, shape, inferredShape, dtype) {
     if (dtype == null) {
-      dtype = inferDtype(values);
+      dtype = inferDtype(values2);
     } else if (dtype === "complex64") {
       throw new Error(`Cannot construct a complex64 tensor directly. Please use tf.complex(real, imag).`);
     }
-    if (typeof values === "object" && ("texture" in values || "buffer" in values && !(values.buffer instanceof ArrayBuffer))) {
+    if (typeof values2 === "object" && ("texture" in values2 || "buffer" in values2 && !(values2.buffer instanceof ArrayBuffer))) {
       if (dtype !== "float32" && dtype !== "int32") {
         throw new Error(`Creating tensor from GPU data only supports 'float32'|'int32' dtype, while the dtype is ${dtype}.`);
       }
-      return ENGINE.backend.createTensorFromGPUData(values, shape || inferredShape, dtype);
+      return ENGINE.backend.createTensorFromGPUData(values2, shape || inferredShape, dtype);
     }
-    if (!isTypedArray(values) && !Array.isArray(values) && typeof values !== "number" && typeof values !== "boolean" && typeof values !== "string") {
+    if (!isTypedArray(values2) && !Array.isArray(values2) && typeof values2 !== "number" && typeof values2 !== "boolean" && typeof values2 !== "string") {
       throw new Error("values passed to tensor(values) must be a number/boolean/string or an array of numbers/booleans/strings, or a TypedArray");
     }
     if (shape != null) {
@@ -32390,18 +32390,18 @@
         assert2(inferredShape[i2] === shape[i2] || !flatDimsDontMatch, () => `Error creating a new Tensor. Inferred shape (${inferredShape}) does not match the provided shape (${shape}). `);
       }
     }
-    if (!isTypedArray(values) && !Array.isArray(values)) {
-      values = [values];
+    if (!isTypedArray(values2) && !Array.isArray(values2)) {
+      values2 = [values2];
     }
     shape = shape || inferredShape;
-    values = dtype !== "string" ? toTypedArray(values, dtype) : flatten2(values, [], true);
-    return ENGINE.makeTensor(values, shape, dtype);
+    values2 = dtype !== "string" ? toTypedArray(values2, dtype) : flatten2(values2, [], true);
+    return ENGINE.makeTensor(values2, shape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/tensor.js
-  function tensor(values, shape, dtype) {
-    const inferredShape = inferShape(values, dtype);
-    return makeTensor(values, shape, inferredShape, dtype);
+  function tensor(values2, shape, dtype) {
+    const inferredShape = inferShape(values2, dtype);
+    return makeTensor(values2, shape, inferredShape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/io/types.js
@@ -32420,7 +32420,7 @@
   async function encodeWeights(tensors, group) {
     const specs = [];
     const dataPromises = [];
-    const names = Array.isArray(tensors) ? tensors.map((tensor2) => tensor2.name) : Object.keys(tensors);
+    const names = Array.isArray(tensors) ? tensors.map((tensor3) => tensor3.name) : Object.keys(tensors);
     for (let i2 = 0; i2 < names.length; ++i2) {
       const name = names[i2];
       const t3 = Array.isArray(tensors) ? tensors[i2].tensor : tensors[name];
@@ -32465,7 +32465,7 @@
       const dtype = spec.dtype;
       const shape = spec.shape;
       const size = sizeFromShape(shape);
-      let values;
+      let values2;
       if ("quantization" in spec) {
         const quantization = spec.quantization;
         if (quantization.dtype === "uint8" || quantization.dtype === "uint16") {
@@ -32484,16 +32484,16 @@
         const quantizedArray = quantization.dtype === "uint8" ? new Uint8Array(byteBuffer) : new Uint16Array(byteBuffer);
         if (dtype === "float32") {
           if (quantization.dtype === "uint8" || quantization.dtype === "uint16") {
-            values = new Float32Array(quantizedArray.length);
+            values2 = new Float32Array(quantizedArray.length);
             for (let i2 = 0; i2 < quantizedArray.length; i2++) {
               const v2 = quantizedArray[i2];
-              values[i2] = v2 * quantization.scale + quantization.min;
+              values2[i2] = v2 * quantization.scale + quantization.min;
             }
           } else if (quantization.dtype === "float16") {
             if (float16Decode === void 0) {
               float16Decode = getFloat16Decoder();
             }
-            values = float16Decode(quantizedArray);
+            values2 = float16Decode(quantizedArray);
           } else {
             throw new Error(`Unsupported quantization type ${quantization.dtype} for weight type float32.`);
           }
@@ -32501,10 +32501,10 @@
           if (quantization.dtype !== "uint8" && quantization.dtype !== "uint16") {
             throw new Error(`Unsupported quantization type ${quantization.dtype} for weight type int32.`);
           }
-          values = new Int32Array(quantizedArray.length);
+          values2 = new Int32Array(quantizedArray.length);
           for (let i2 = 0; i2 < quantizedArray.length; i2++) {
             const v2 = quantizedArray[i2];
-            values[i2] = Math.round(v2 * quantization.scale + quantization.min);
+            values2[i2] = Math.round(v2 * quantization.scale + quantization.min);
           }
         } else {
           throw new Error(`Unsupported dtype in weight '${name}': ${dtype}`);
@@ -32512,30 +32512,30 @@
         offset += size * quantizationSizeFactor;
       } else if (dtype === "string") {
         const size2 = sizeFromShape(spec.shape);
-        values = [];
+        values2 = [];
         for (let i2 = 0; i2 < size2; i2++) {
           const byteLength = new Uint32Array(buffer2.slice(offset, offset + NUM_BYTES_STRING_LENGTH))[0];
           offset += NUM_BYTES_STRING_LENGTH;
           const bytes = new Uint8Array(buffer2.slice(offset, offset + byteLength));
-          values.push(bytes);
+          values2.push(bytes);
           offset += byteLength;
         }
       } else {
         const dtypeFactor = DTYPE_VALUE_SIZE_MAP[dtype];
         const byteBuffer = buffer2.slice(offset, offset + size * dtypeFactor);
         if (dtype === "float32") {
-          values = new Float32Array(byteBuffer);
+          values2 = new Float32Array(byteBuffer);
         } else if (dtype === "int32") {
-          values = new Int32Array(byteBuffer);
+          values2 = new Int32Array(byteBuffer);
         } else if (dtype === "bool") {
-          values = new Uint8Array(byteBuffer);
+          values2 = new Uint8Array(byteBuffer);
         } else if (dtype === "complex64") {
-          values = new Float32Array(byteBuffer);
-          const real4 = new Float32Array(values.length / 2);
-          const image2 = new Float32Array(values.length / 2);
+          values2 = new Float32Array(byteBuffer);
+          const real4 = new Float32Array(values2.length / 2);
+          const image2 = new Float32Array(values2.length / 2);
           for (let i2 = 0; i2 < real4.length; i2++) {
-            real4[i2] = values[i2 * 2];
-            image2[i2] = values[i2 * 2 + 1];
+            real4[i2] = values2[i2 * 2];
+            image2[i2] = values2[i2 * 2 + 1];
           }
           const realTensor = tensor(real4, shape, "float32");
           const imageTensor = tensor(image2, shape, "float32");
@@ -32548,7 +32548,7 @@
         offset += size * dtypeFactor;
       }
       if (dtype !== "complex64") {
-        out[name] = tensor(values, shape, dtype);
+        out[name] = tensor(values2, shape, dtype);
       }
     }
     return out;
@@ -33463,10 +33463,10 @@
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/buffer.js
-  function buffer(shape, dtype = "float32", values) {
+  function buffer(shape, dtype = "float32", values2) {
     dtype = dtype || "float32";
     assertNonNegativeIntegerDimensions(shape);
-    return new TensorBuffer(shape, dtype, values);
+    return new TensorBuffer(shape, dtype, values2);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/cast.js
@@ -33522,7 +33522,7 @@
   }
   function dispose(container) {
     const tensors = getTensorsInContainer(container);
-    tensors.forEach((tensor2) => tensor2.dispose());
+    tensors.forEach((tensor3) => tensor3.dispose());
   }
   function keep(result) {
     return ENGINE.keep(result);
@@ -33980,8 +33980,8 @@
   function eitherStridesOrDilationsAreOne(strides, dilations) {
     return tupleValuesAreOne(strides) || tupleValuesAreOne(dilations);
   }
-  function stridesOrDilationsArePositive(values) {
-    return parseTupleParam(values).every((value) => value > 0);
+  function stridesOrDilationsArePositive(values2) {
+    return parseTupleParam(values2).every((value) => value > 0);
   }
   function convertConv2DDataFormat(dataFormat) {
     if (dataFormat === "NHWC") {
@@ -34072,10 +34072,10 @@
     assert2(tensors.length >= 1, () => "Pass at least one tensor to concat");
     const $tensors = convertToTensorArray(tensors, "tensors", "concat", "string_or_numeric");
     if ($tensors[0].dtype === "complex64") {
-      $tensors.forEach((tensor2) => {
-        if (tensor2.dtype !== "complex64") {
+      $tensors.forEach((tensor3) => {
+        if (tensor3.dtype !== "complex64") {
           throw new Error(`Cannot concatenate complex64 tensors with a tensor
-          with dtype ${tensor2.dtype}. `);
+          with dtype ${tensor3.dtype}. `);
         }
       });
     }
@@ -35433,9 +35433,9 @@
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/search_sorted.js
   var INT32_MAX = 2147483648;
-  function searchSorted_(sortedSequence, values, side = "left") {
+  function searchSorted_(sortedSequence, values2, side = "left") {
     const $sortedSequence = convertToTensor(sortedSequence, "sortedSequence", "searchSorted");
-    const $values = convertToTensor(values, "values", "searchSorted");
+    const $values = convertToTensor(values2, "values", "searchSorted");
     const sequenceSize = $sortedSequence.shape[$sortedSequence.shape.length - 1];
     const valuesSize = $values.shape[$values.shape.length - 1];
     const $sortedSequence2D = reshape2($sortedSequence, [-1, sequenceSize]);
@@ -35462,8 +35462,8 @@
   var searchSorted = /* @__PURE__ */ op({ searchSorted_ });
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/lower_bound.js
-  function lowerBound(sortedSequence, values) {
-    return searchSorted(sortedSequence, values, "left");
+  function lowerBound(sortedSequence, values2) {
+    return searchSorted(sortedSequence, values2, "left");
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/max_pool.js
@@ -35553,8 +35553,8 @@
       const imag3 = zeros(shape, "float32");
       return complex(real4, imag3);
     }
-    const values = makeZerosTypedArray(sizeFromShape(shape), dtype);
-    return ENGINE.makeTensor(values, shape, dtype);
+    const values2 = makeZerosTypedArray(sizeFromShape(shape), dtype);
+    return ENGINE.makeTensor(values2, shape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/ones.js
@@ -35565,8 +35565,8 @@
       const imag3 = zeros(shape, "float32");
       return complex(real4, imag3);
     }
-    const values = makeOnesTypedArray(sizeFromShape(shape), dtype);
-    return ENGINE.makeTensor(values, shape, dtype);
+    const values2 = makeOnesTypedArray(sizeFromShape(shape), dtype);
+    return ENGINE.makeTensor(values2, shape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/meshgrid.js
@@ -35922,9 +35922,9 @@
   var raggedRange = /* @__PURE__ */ op({ raggedRange_ });
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/ragged_tensor_to_tensor.js
-  function raggedTensorToTensor_(shape, values, defaultValue, rowPartitionTensors, rowPartitionTypes) {
+  function raggedTensorToTensor_(shape, values2, defaultValue, rowPartitionTensors, rowPartitionTypes) {
     const $shape = convertToTensor(shape, "shape", "raggedTensorToTensor", "int32");
-    const $values = convertToTensor(values, "values", "raggedTensorToTensor");
+    const $values = convertToTensor(values2, "values", "raggedTensorToTensor");
     const $defaultValue = convertToTensor(defaultValue, "defaultValue", "raggedTensorToTensor", $values.dtype);
     const $rowPartitionTensors = rowPartitionTensors.map((t3, i2) => convertToTensor(t3, `tensors${i2}`, "raggedTensorToTensor", "int32"));
     const inputs = {
@@ -35942,20 +35942,20 @@
   function rand_(shape, randFunction, dtype) {
     assertNonNegativeIntegerDimensions(shape);
     const size = sizeFromShape(shape);
-    let values = null;
+    let values2 = null;
     if (dtype == null || dtype === "float32") {
-      values = new Float32Array(size);
+      values2 = new Float32Array(size);
     } else if (dtype === "int32") {
-      values = new Int32Array(size);
+      values2 = new Int32Array(size);
     } else if (dtype === "bool") {
-      values = new Uint8Array(size);
+      values2 = new Uint8Array(size);
     } else {
       throw new Error(`Unknown data type ${dtype}`);
     }
     for (let i2 = 0; i2 < size; i2++) {
-      values[i2] = randFunction();
+      values2[i2] = randFunction();
     }
-    return ENGINE.makeTensor(values, shape, dtype);
+    return ENGINE.makeTensor(values2, shape, dtype);
   }
   var rand = /* @__PURE__ */ op({ rand_ });
 
@@ -36541,87 +36541,87 @@
   var tan = /* @__PURE__ */ op({ tan_ });
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/tensor1d.js
-  function tensor1d(values, dtype) {
-    assertNonNull(values);
-    const inferredShape = inferShape(values, dtype);
+  function tensor1d(values2, dtype) {
+    assertNonNull(values2);
+    const inferredShape = inferShape(values2, dtype);
     if (inferredShape.length !== 1) {
       throw new Error("tensor1d() requires values to be a flat/TypedArray");
     }
     const shape = null;
-    return makeTensor(values, shape, inferredShape, dtype);
+    return makeTensor(values2, shape, inferredShape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/tensor2d.js
-  function tensor2d(values, shape, dtype) {
-    assertNonNull(values);
+  function tensor2d(values2, shape, dtype) {
+    assertNonNull(values2);
     if (shape != null && shape.length !== 2) {
       throw new Error("tensor2d() requires shape to have two numbers");
     }
-    const inferredShape = inferShape(values, dtype);
+    const inferredShape = inferShape(values2, dtype);
     if (inferredShape.length !== 2 && inferredShape.length !== 1) {
       throw new Error("tensor2d() requires values to be number[][] or flat/TypedArray");
     }
     if (inferredShape.length === 1 && shape == null) {
       throw new Error("tensor2d() requires shape to be provided when `values` are a flat/TypedArray");
     }
-    return makeTensor(values, shape, inferredShape, dtype);
+    return makeTensor(values2, shape, inferredShape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/tensor3d.js
-  function tensor3d(values, shape, dtype) {
-    assertNonNull(values);
+  function tensor3d(values2, shape, dtype) {
+    assertNonNull(values2);
     if (shape != null && shape.length !== 3) {
       throw new Error("tensor3d() requires shape to have three numbers");
     }
-    const inferredShape = inferShape(values, dtype);
+    const inferredShape = inferShape(values2, dtype);
     if (inferredShape.length !== 3 && inferredShape.length !== 1) {
       throw new Error("tensor3d() requires values to be number[][][] or flat/TypedArray");
     }
     if (inferredShape.length === 1 && shape == null) {
       throw new Error("tensor3d() requires shape to be provided when `values` are a flat array");
     }
-    return makeTensor(values, shape, inferredShape, dtype);
+    return makeTensor(values2, shape, inferredShape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/tensor4d.js
-  function tensor4d(values, shape, dtype) {
-    assertNonNull(values);
+  function tensor4d(values2, shape, dtype) {
+    assertNonNull(values2);
     if (shape != null && shape.length !== 4) {
       throw new Error("tensor4d() requires shape to have four numbers");
     }
-    const inferredShape = inferShape(values, dtype);
+    const inferredShape = inferShape(values2, dtype);
     if (inferredShape.length !== 4 && inferredShape.length !== 1) {
       throw new Error("tensor4d() requires values to be number[][][][] or flat/TypedArray");
     }
     if (inferredShape.length === 1 && shape == null) {
       throw new Error("tensor4d() requires shape to be provided when `values` are a flat array");
     }
-    return makeTensor(values, shape, inferredShape, dtype);
+    return makeTensor(values2, shape, inferredShape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/tensor5d.js
-  function tensor5d(values, shape, dtype) {
-    assertNonNull(values);
+  function tensor5d(values2, shape, dtype) {
+    assertNonNull(values2);
     if (shape != null && shape.length !== 5) {
       throw new Error("tensor5d() requires shape to have five numbers");
     }
-    const inferredShape = inferShape(values, dtype);
+    const inferredShape = inferShape(values2, dtype);
     if (inferredShape.length !== 5 && inferredShape.length !== 1) {
       throw new Error("tensor5d() requires values to be number[][][][][] or flat/TypedArray");
     }
     if (inferredShape.length === 1 && shape == null) {
       throw new Error("tensor5d() requires shape to be provided when `values` are a flat array");
     }
-    return makeTensor(values, shape, inferredShape, dtype);
+    return makeTensor(values2, shape, inferredShape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/tensor6d.js
-  function tensor6d(values, shape, dtype) {
-    assertNonNull(values);
+  function tensor6d(values2, shape, dtype) {
+    assertNonNull(values2);
     if (shape != null && shape.length !== 6) {
       throw new Error("tensor6d() requires shape to have six numbers");
     }
-    const inferredShape = inferShape(values, dtype);
+    const inferredShape = inferShape(values2, dtype);
     if (inferredShape.length !== 6 && inferredShape.length !== 1) {
       throw new Error("tensor6d() requires values to be number[][][][][][] or flat/TypedArray");
     }
@@ -36629,7 +36629,7 @@
       throw new Error("tensor6d() requires shape to be provided when `values` are a flat array");
     }
     shape = shape || inferredShape;
-    return makeTensor(values, shape, inferredShape, dtype);
+    return makeTensor(values2, shape, inferredShape, dtype);
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/topk.js
@@ -36647,8 +36647,8 @@
     }
     const inputs = { x: $x };
     const attrs = { k: k4, sorted };
-    const [values, indices] = ENGINE.runKernel(TopK, inputs, attrs);
-    return { values, indices };
+    const [values2, indices] = ENGINE.runKernel(TopK, inputs, attrs);
+    return { values: values2, indices };
   }
   var topk = /* @__PURE__ */ op({ topk_ });
 
@@ -36673,8 +36673,8 @@
     assert2($x.rank > 0, () => "The input tensor must be at least 1D");
     const inputs = { x: $x };
     const attrs = { axis };
-    const [values, indices] = ENGINE.runKernel(Unique, inputs, attrs);
-    return { values, indices };
+    const [values2, indices] = ENGINE.runKernel(Unique, inputs, attrs);
+    return { values: values2, indices };
   }
   var unique2 = /* @__PURE__ */ op({ unique_ });
 
@@ -36700,8 +36700,8 @@
   var unstack = /* @__PURE__ */ op({ unstack_ });
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/upper_bound.js
-  function upperBound(sortedSequence, values) {
-    return searchSorted(sortedSequence, values, "right");
+  function upperBound(sortedSequence, values2) {
+    return searchSorted(sortedSequence, values2, "right");
   }
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/variable.js
@@ -36740,8 +36740,8 @@
   var whereAsync = whereAsync_;
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/boolean_mask.js
-  async function booleanMaskAsync_(tensor2, mask, axis) {
-    const $tensor = convertToTensor(tensor2, "tensor", "boolMask");
+  async function booleanMaskAsync_(tensor3, mask, axis) {
+    const $tensor = convertToTensor(tensor3, "tensor", "boolMask");
     const $mask = convertToTensor(mask, "mask", "boolMask", "bool");
     const axisFrom = axis == null ? 0 : axis;
     const maskDim = $mask.rank;
@@ -36758,7 +36758,7 @@
     const positivePositions = await whereAsync(reshapedMask);
     const indices = squeeze(positivePositions, [1]);
     const res = gather(reshapedTensor, indices, axisFrom);
-    if (tensor2 !== $tensor) {
+    if (tensor3 !== $tensor) {
       $tensor.dispose();
     }
     if (mask !== $mask) {
@@ -38339,9 +38339,9 @@
   var softmaxCrossEntropy = /* @__PURE__ */ op({ softmaxCrossEntropy_ });
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/sparse/sparse_fill_empty_rows.js
-  function sparseFillEmptyRows_(indices, values, denseShape, defaultValue) {
+  function sparseFillEmptyRows_(indices, values2, denseShape, defaultValue) {
     const $indices = convertToTensor(indices, "indices", "sparseFillEmptyRows", "int32");
-    const $values = convertToTensor(values, "values", "sparseFillEmptyRows");
+    const $values = convertToTensor(values2, "values", "sparseFillEmptyRows");
     const $denseShape = convertToTensor(denseShape, "denseShape", "sparseFillEmptyRows", "int32");
     const $defaultValue = convertToTensor(defaultValue, "defaultValue", "sparseFillEmptyRows", $values.dtype);
     if ($indices.rank !== 2) {
@@ -39939,20 +39939,20 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
       fromPixels2DContext.drawImage(pixels, 0, 0, width, height);
       vals = fromPixels2DContext.getImageData(0, 0, width, height).data;
     }
-    let values;
+    let values2;
     if (numChannels === 4) {
-      values = new Int32Array(vals);
+      values2 = new Int32Array(vals);
     } else {
       const numPixels = width * height;
-      values = new Int32Array(numPixels * numChannels);
+      values2 = new Int32Array(numPixels * numChannels);
       for (let i2 = 0; i2 < numPixels; i2++) {
         for (let channel = 0; channel < numChannels; ++channel) {
-          values[i2 * numChannels + channel] = vals[i2 * 4 + channel];
+          values2[i2 * numChannels + channel] = vals[i2 * 4 + channel];
         }
       }
     }
     const outShape = [height, width, numChannels];
-    return tensor3d(values, outShape, "int32");
+    return tensor3d(values2, outShape, "int32");
   }
   function isPixelData(pixels) {
     return pixels != null && pixels.data instanceof Uint8Array;
@@ -40048,8 +40048,8 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
   var fromPixels = /* @__PURE__ */ op({ fromPixels_ });
 
   // node_modules/@tensorflow/tfjs-core/dist/ops/gather_nd_util.js
-  function prepareAndValidate(tensor2, indices) {
-    const tensorRank = tensor2.shape.length;
+  function prepareAndValidate(tensor3, indices) {
+    const tensorRank = tensor3.shape.length;
     const indicesRank = indices.shape.length;
     if (tensorRank < 1) {
       throw new Error(`tf.gatherND() expects the input to be rank 1 or higher, but the rank was ${tensorRank}.`);
@@ -40063,8 +40063,8 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
     if (indices.shape[indicesRank - 1] > tensorRank) {
       throw new Error(`index innermost dimension length must be <= tensor rank; saw: ${indices.shape[indicesRank - 1]} vs. ${tensorRank}`);
     }
-    if (sizeFromShape(tensor2.shape) === 0) {
-      throw new Error(`Requested more than 0 entries, but input is empty. Input shape: ${tensor2.shape}.`);
+    if (sizeFromShape(tensor3.shape) === 0) {
+      throw new Error(`Requested more than 0 entries, but input is empty. Input shape: ${tensor3.shape}.`);
     }
     const indicesShape = indices.shape;
     const sliceRank = indicesShape[indicesShape.length - 1];
@@ -40072,7 +40072,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
     for (let i2 = 0; i2 < indicesShape.length - 1; ++i2) {
       nResult *= indicesShape[i2];
     }
-    const inputShape = tensor2.shape;
+    const inputShape = tensor3.shape;
     const resultShape = indicesShape.slice();
     resultShape.pop();
     let sliceSize = 1;
@@ -40081,7 +40081,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
       resultShape.push(inputShape[i2]);
     }
     const strides = [
-      ...computeStrides(tensor2.shape).map((stride) => stride / sliceSize),
+      ...computeStrides(tensor3.shape).map((stride) => stride / sliceSize),
       1
     ].slice(0, sliceRank);
     return [resultShape, nResult, sliceSize, strides];
@@ -41825,11 +41825,11 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
     const isEnabled = gl2.fenceSync != null;
     return isEnabled;
   }
-  function assertNotComplex(tensor2, opName) {
-    if (!Array.isArray(tensor2)) {
-      tensor2 = [tensor2];
+  function assertNotComplex(tensor3, opName) {
+    if (!Array.isArray(tensor3)) {
+      tensor3 = [tensor3];
     }
-    tensor2.forEach((t3) => {
+    tensor3.forEach((t3) => {
       if (t3 != null) {
         util_exports.assert(t3.dtype !== "complex64", () => `${opName} does not support complex64 tensors in the WebGL backend.`);
       }
@@ -44865,11 +44865,11 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
   });
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/cpu_util.js
-  function assertNotComplex2(tensor2, opName) {
-    if (!Array.isArray(tensor2)) {
-      tensor2 = [tensor2];
+  function assertNotComplex2(tensor3, opName) {
+    if (!Array.isArray(tensor3)) {
+      tensor3 = [tensor3];
     }
-    tensor2.forEach((t3) => {
+    tensor3.forEach((t3) => {
       if (t3 != null) {
         util_exports.assert(t3.dtype !== "complex64", () => `${opName} does not support complex64 tensors in the CPU backend.`);
       }
@@ -44941,8 +44941,8 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
       const imag3 = zeros2(backend, shape, "float32");
       return complex2({ inputs: { real: real4, imag: imag3 }, backend });
     }
-    const values = util_exports.makeZerosTypedArray(util_exports.sizeFromShape(shape), dtype);
-    return backend.makeTensorInfo(shape, dtype, values);
+    const values2 = util_exports.makeZerosTypedArray(util_exports.sizeFromShape(shape), dtype);
+    return backend.makeTensorInfo(shape, dtype, values2);
   }
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Identity.js
@@ -44963,14 +44963,14 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
   }
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Cast.js
-  function castImpl(values, shape, inputType, dtype) {
+  function castImpl(values2, shape, inputType, dtype) {
     if (dtype === "int32") {
-      const resultValues = Int32Array.from(values);
+      const resultValues = Int32Array.from(values2);
       return [shape, "int32", resultValues];
     }
     if (dtype === "bool") {
       const zero = util_exports.toTypedArray([0], inputType);
-      const [resultData, resultShape] = createSimpleBinaryKernelImpl((a2, b2) => a2 !== b2 ? 1 : 0)(shape, [], values, zero, "bool");
+      const [resultData, resultShape] = createSimpleBinaryKernelImpl((a2, b2) => a2 !== b2 ? 1 : 0)(shape, [], values2, zero, "bool");
       return [resultShape, "bool", resultData];
     }
     throw new Error(`Error in Cast: failed to cast ${inputType} to ${dtype}`);
@@ -45000,8 +45000,8 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
       const result = identity2({ inputs: { x: x2 }, backend });
       return { dataId: result.dataId, shape: result.shape, dtype };
     }
-    const values = backend.data.get(x2.dataId).values;
-    const [resultShape, resultType, resultData] = castImpl(values, x2.shape, x2.dtype, dtype);
+    const values2 = backend.data.get(x2.dataId).values;
+    const [resultShape, resultType, resultData] = castImpl(values2, x2.shape, x2.dtype, dtype);
     return backend.makeTensorInfo(resultShape, resultType, resultData);
   }
 
@@ -45159,10 +45159,10 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/utils/unary_impl.js
   function createSimpleUnaryImpl(op2) {
-    return (values, dtype, attrs) => {
-      const newValues = util_exports.getTypedArrayFromDType(dtype, values.length);
-      for (let i2 = 0; i2 < values.length; ++i2) {
-        newValues[i2] = op2(values[i2], attrs);
+    return (values2, dtype, attrs) => {
+      const newValues = util_exports.getTypedArrayFromDType(dtype, values2.length);
+      for (let i2 = 0; i2 < values2.length; ++i2) {
+        newValues[i2] = op2(values2[i2], attrs);
       }
       return newValues;
     };
@@ -45177,12 +45177,12 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
         throw new Error("unaryKernelFunc does not support string input/output");
       }
       const cpuBackend = backend;
-      const values = cpuBackend.data.get(x2.dataId).values;
+      const values2 = cpuBackend.data.get(x2.dataId).values;
       const xSize = util_exports.sizeFromShape(x2.shape);
       const $dtype = dtype || x2.dtype;
       const newValues = util_exports.getArrayFromDType($dtype, xSize);
       for (let i2 = 0; i2 < xSize; ++i2) {
-        newValues[i2] = op2(values[i2], attrs);
+        newValues[i2] = op2(values2[i2], attrs);
       }
       return cpuBackend.makeTensorInfo(x2.shape, $dtype, newValues);
     };
@@ -45195,9 +45195,9 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
         throw new Error("unaryKernelFunc does not support string input/output");
       }
       const cpuBackend = backend;
-      const values = cpuBackend.data.get(x2.dataId).values;
+      const values2 = cpuBackend.data.get(x2.dataId).values;
       const $dtype = dtype || x2.dtype;
-      const newValues = unaryImpl(values, $dtype, attrs);
+      const newValues = unaryImpl(values2, $dtype, attrs);
       return cpuBackend.makeTensorInfo(x2.shape, $dtype, newValues);
     };
   }
@@ -45307,12 +45307,12 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/LinSpace_impl.js
   function linSpaceImpl(start, stop, num) {
     const step3 = (stop - start) / (num - 1);
-    const values = util_exports.makeZerosTypedArray(num, "float32");
-    values[0] = start;
-    for (let i2 = 1; i2 < values.length; i2++) {
-      values[i2] = values[i2 - 1] + step3;
+    const values2 = util_exports.makeZerosTypedArray(num, "float32");
+    values2[0] = start;
+    for (let i2 = 1; i2 < values2.length; i2++) {
+      values2[i2] = values2[i2 - 1] + step3;
     }
-    return values;
+    return values2;
   }
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Log.js
@@ -45486,14 +45486,14 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
     }
     return outDims;
   }
-  function writeValueSlices(paramsDenseValues, paramsDenseValuesShape, valueSlices, valueSize, values, valuesShape) {
+  function writeValueSlices(paramsDenseValues, paramsDenseValuesShape, valueSlices, valueSize, values2, valuesShape) {
     const denseM = computeFlatOuterDims(paramsDenseValuesShape, 2)[1];
     const valuesM = computeFlatOuterDims(valuesShape, 2)[1];
     let outPos = 0;
     for (const slice3 of valueSlices) {
       for (let i2 = slice3[0]; i2 < slice3[1]; ++i2) {
         for (let j3 = 0; j3 < valueSize; ++j3) {
-          values[outPos * valuesM + j3] = paramsDenseValues[i2 * denseM + j3];
+          values2[outPos * valuesM + j3] = paramsDenseValues[i2 * denseM + j3];
         }
         ++outPos;
       }
@@ -45596,10 +45596,10 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/RaggedTensorToTensor_impl.js
   var RowPartitionType2 = backend_util_exports.RowPartitionType;
   var RaggedTensorToTensorOp = class {
-    constructor(shape, shapeShape, values, valuesShape, valuesDType, defaultValue, defaultValueShape, rowPartitionValues, rowPartitionValuesShapes, rowPartitionTypeStrings) {
+    constructor(shape, shapeShape, values2, valuesShape, valuesDType, defaultValue, defaultValueShape, rowPartitionValues, rowPartitionValuesShapes, rowPartitionTypeStrings) {
       this.shape = shape;
       this.shapeShape = shapeShape;
-      this.values = values;
+      this.values = values2;
       this.valuesShape = valuesShape;
       this.valuesDType = valuesDType;
       this.defaultValue = defaultValue;
@@ -45938,8 +45938,8 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
     }
     return out;
   }
-  function raggedTensorToTensorImpl(shape, shapesShape, values, valuesShape, valuesDType, defaultValue, defaultValueShape, rowPartitionValues, rowPartitionValuesShapes, rowPartitionTypes) {
-    return new RaggedTensorToTensorOp(shape, shapesShape, values, valuesShape, valuesDType, defaultValue, defaultValueShape, rowPartitionValues, rowPartitionValuesShapes, rowPartitionTypes).compute();
+  function raggedTensorToTensorImpl(shape, shapesShape, values2, valuesShape, valuesDType, defaultValue, defaultValueShape, rowPartitionValues, rowPartitionValuesShapes, rowPartitionTypes) {
+    return new RaggedTensorToTensorOp(shape, shapesShape, values2, valuesShape, valuesDType, defaultValue, defaultValueShape, rowPartitionValues, rowPartitionValuesShapes, rowPartitionTypes).compute();
   }
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Range_impl.js
@@ -45951,15 +45951,15 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
       return util_exports.makeZerosTypedArray(0, dtype);
     }
     const numElements = Math.abs(Math.ceil((stop - start) / step3));
-    const values = util_exports.makeZerosTypedArray(numElements, dtype);
+    const values2 = util_exports.makeZerosTypedArray(numElements, dtype);
     if (stop < start && step3 === 1) {
       step3 = -1;
     }
-    values[0] = start;
-    for (let i2 = 1; i2 < values.length; i2++) {
-      values[i2] = values[i2 - 1] + step3;
+    values2[0] = start;
+    for (let i2 = 1; i2 < values2.length; i2++) {
+      values2[i2] = values2[i2 - 1] + step3;
     }
-    return values;
+    return values2;
   }
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Rsqrt.js
@@ -46035,7 +46035,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
   }
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/SparseFillEmptyRows_impl.js
-  function sparseFillEmptyRowsImpl(indices, indicesShape, indicesDType, values, valuesDType, denseShape, defaultValue) {
+  function sparseFillEmptyRowsImpl(indices, indicesShape, indicesDType, values2, valuesDType, denseShape, defaultValue) {
     const indicesCount = indicesShape[0];
     const denseRows = denseShape[0];
     const emptyRowIndicator = new Array(denseRows);
@@ -46082,7 +46082,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
     }
     if (allRowsFull && rowsAreOrdered) {
       const outputIndices = indices;
-      const outputValues = values;
+      const outputValues = values2;
       for (let i2 = 0; i2 < indicesCount; ++i2) {
         reverseIndexMap[i2] = i2;
       }
@@ -46106,7 +46106,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
         for (let j3 = 0; j3 < rank; ++j3) {
           outputIndices[outputI * rank + j3] = indices[i2 * rank + j3];
         }
-        outputValues[outputI] = values[i2];
+        outputValues[outputI] = values2[i2];
         reverseIndexMap[i2] = outputI;
       }
       for (let row = 0; row < denseRows; ++row) {
@@ -46477,18 +46477,18 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
       maxNumEntries = Math.max(maxNumEntries, nEntries);
     }
     const indices = util_exports.getArrayFromDType("int32", outputSize * 2);
-    const values = new Array(outputSize);
+    const values2 = new Array(outputSize);
     const shape = [batchSize, maxNumEntries];
     let c2 = 0;
     for (let i2 = 0; i2 < batchSize; ++i2) {
       for (let j3 = 0; j3 < numIndices[i2]; ++j3) {
         indices[c2 * 2] = i2;
         indices[c2 * 2 + 1] = j3;
-        values[c2] = tokens[c2];
+        values2[c2] = tokens[c2];
         ++c2;
       }
     }
-    return [indices, values, shape];
+    return [indices, values2, shape];
   }
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/StringToHashBucketFast_impl.js
@@ -46609,7 +46609,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
   }
 
   // node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Unique_impl.js
-  function uniqueImpl(values, axis, shape, dtype) {
+  function uniqueImpl(values2, axis, shape, dtype) {
     const $axis = util_exports.parseAxisParam(axis, shape)[0];
     const newShape = [1, shape[0], 1];
     for (let i2 = 0; i2 < $axis; i2++) {
@@ -46621,13 +46621,13 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
     }
     const uniqueElements = {};
     const indices = new Int32Array(shape[$axis]);
-    const inputBuffer = new TensorBuffer(newShape, dtype, values);
+    const inputBuffer = new TensorBuffer(newShape, dtype, values2);
     const uniqueIndices = [];
     const is1DTensor = newShape[0] === 1 && newShape[2] === 1;
     for (let i2 = 0; i2 < shape[$axis]; i2++) {
       let element;
       if (is1DTensor) {
-        element = values[i2].toString();
+        element = values2[i2].toString();
       } else {
         const axisValues = [];
         for (let m2 = 0; m2 < newShape[0]; m2++) {
@@ -47233,15 +47233,15 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
       this.disposeIntermediateTensorInfo(input2);
       return output.dataId;
     }
-    write(values, shape, dtype) {
+    write(values2, shape, dtype) {
       if (env().getBool("WEBGL_CHECK_NUMERICAL_PROBLEMS") || env().getBool("DEBUG")) {
-        this.checkNumericalProblems(values);
+        this.checkNumericalProblems(values2);
       }
-      if (dtype === "complex64" && values != null) {
+      if (dtype === "complex64" && values2 != null) {
         throw new Error(`Cannot write to a complex64 dtype. Please use tf.complex(real, imag).`);
       }
       const dataId = { id: this.nextDataId() };
-      this.texData.set(dataId, { shape, dtype, values, usage: TextureUsage.UPLOAD, refCount: 1 });
+      this.texData.set(dataId, { shape, dtype, values: values2, usage: TextureUsage.UPLOAD, refCount: 1 });
       return dataId;
     }
     /** Return refCount of a `TensorData`. */
@@ -47264,21 +47264,21 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
         texData.refCount--;
       }
     }
-    move(dataId, values, shape, dtype, refCount) {
+    move(dataId, values2, shape, dtype, refCount) {
       if (env().getBool("DEBUG")) {
-        this.checkNumericalProblems(values);
+        this.checkNumericalProblems(values2);
       }
       if (dtype === "complex64") {
         throw new Error(`Cannot write to a complex64 dtype. Please use tf.complex(real, imag).`);
       }
-      this.texData.set(dataId, { shape, dtype, values, usage: TextureUsage.UPLOAD, refCount });
+      this.texData.set(dataId, { shape, dtype, values: values2, usage: TextureUsage.UPLOAD, refCount });
     }
     disposeIntermediateTensorInfo(tensorInfo) {
       this.disposeData(tensorInfo.dataId);
     }
     readSync(dataId) {
       const texData = this.texData.get(dataId);
-      const { values, dtype, complexTensorInfos, slice: slice3, shape, isPacked } = texData;
+      const { values: values2, dtype, complexTensorInfos, slice: slice3, shape, isPacked } = texData;
       if (slice3 != null) {
         let program;
         if (isPacked) {
@@ -47291,11 +47291,11 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
         this.disposeIntermediateTensorInfo(res);
         return data;
       }
-      if (values != null) {
+      if (values2 != null) {
         return this.convertAndCacheOnCPU(dataId);
       }
       if (dtype === "string") {
-        return values;
+        return values2;
       }
       const shouldTimeProgram = this.activeTimers != null;
       let start;
@@ -47321,7 +47321,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
         return new Promise((resolve) => subscribers2.push(resolve));
       }
       const texData = this.texData.get(dataId);
-      const { values, shape, slice: slice3, dtype, complexTensorInfos, isPacked } = texData;
+      const { values: values2, shape, slice: slice3, dtype, complexTensorInfos, isPacked } = texData;
       if (slice3 != null) {
         let program;
         if (isPacked) {
@@ -47334,7 +47334,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
         this.disposeIntermediateTensorInfo(res);
         return data;
       }
-      if (values != null) {
+      if (values2 != null) {
         return this.convertAndCacheOnCPU(dataId);
       }
       if (env().getBool("DEBUG")) {
@@ -47397,7 +47397,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
      */
     readToGPU(dataId, options = {}) {
       const texData = this.texData.get(dataId);
-      const { values, shape, slice: slice3, dtype, isPacked, texture } = texData;
+      const { values: values2, shape, slice: slice3, dtype, isPacked, texture } = texData;
       if (dtype === "complex64") {
         throw new Error("Does not support reading texture for complex64 dtype.");
       }
@@ -47414,7 +47414,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
         return gpuResouorce;
       }
       if (texture == null) {
-        if (values != null) {
+        if (values2 != null) {
           throw new Error("Data is not on GPU but on CPU.");
         } else {
           throw new Error("There is no data on GPU or CPU.");
@@ -47437,12 +47437,12 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
       }
       return buffer(t3.shape, t3.dtype, data);
     }
-    checkNumericalProblems(values) {
-      if (values == null) {
+    checkNumericalProblems(values2) {
+      if (values2 == null) {
         return;
       }
-      for (let i2 = 0; i2 < values.length; i2++) {
-        const num = values[i2];
+      for (let i2 = 0; i2 < values2.length; i2++) {
+        const num = values2[i2];
         if (!canBeRepresented(num)) {
           if (env().getBool("WEBGL_RENDER_FLOAT32_CAPABLE")) {
             throw Error(`The value ${num} cannot be represented with your current settings. Consider enabling float32 rendering: 'tf.env().set('WEBGL_RENDER_FLOAT32_ENABLED', true);'`);
@@ -47649,19 +47649,19 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
       const outInfo = this.compileAndRun(program, [x2]);
       return engine().makeTensorFromTensorInfo(outInfo);
     }
-    makeTensorInfo(shape, dtype, values) {
+    makeTensorInfo(shape, dtype, values2) {
       let dataId;
-      if (dtype === "string" && values != null && values.length > 0 && util_exports.isString(values[0])) {
-        const encodedValues = values.map((d2) => util_exports.encodeString(d2));
+      if (dtype === "string" && values2 != null && values2.length > 0 && util_exports.isString(values2[0])) {
+        const encodedValues = values2.map((d2) => util_exports.encodeString(d2));
         dataId = this.write(encodedValues, shape, dtype);
       } else {
-        dataId = this.write(values, shape, dtype);
+        dataId = this.write(values2, shape, dtype);
       }
       this.texData.get(dataId).usage = null;
       return { dataId, shape, dtype };
     }
-    makeOutput(shape, dtype, values) {
-      return engine().makeTensorFromTensorInfo(this.makeTensorInfo(shape, dtype, values), this);
+    makeOutput(shape, dtype, values2) {
+      return engine().makeTensorFromTensorInfo(this.makeTensorInfo(shape, dtype, values2), this);
     }
     unpackTensor(input2) {
       const program = new UnpackProgram(input2.shape);
@@ -47859,7 +47859,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
     }
     uploadToGPU(dataId) {
       const texData = this.texData.get(dataId);
-      const { shape, dtype, values, texture, usage, isPacked } = texData;
+      const { shape, dtype, values: values2, texture, usage, isPacked } = texData;
       if (texture != null) {
         return;
       }
@@ -47873,11 +47873,11 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
         texShape = getTextureShapeFromLogicalShape(shape, isPacked);
         texData.texShape = texShape;
       }
-      if (values != null) {
+      if (values2 != null) {
         const shapeAs3D = getShapeAs3D(shape);
         let program;
         let width = texShape[1], height = texShape[0];
-        const isByteArray = values instanceof Uint8Array || values instanceof Uint8ClampedArray;
+        const isByteArray = values2 instanceof Uint8Array || values2 instanceof Uint8ClampedArray;
         if (isPacked || !isByteArray) {
           [width, height] = getPackedMatrixTextureShapeWidthHeight(texShape[0], texShape[1]);
         }
@@ -47895,7 +47895,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
           tempDenseInputTexData.usage = TextureUsage.UPLOAD;
         }
         tempDenseInputTexData.texShape = tempDenseInputTexShape;
-        this.gpgpu.uploadDenseMatrixToTexture(this.getTexture(tempDenseInputHandle.dataId), width, height, values);
+        this.gpgpu.uploadDenseMatrixToTexture(this.getTexture(tempDenseInputHandle.dataId), width, height, values2);
         const customValues = [[height, width]];
         const preventEagerUnpacking = true;
         const encodedOutputTarget = this.runWebGLProgram(program, [tempDenseInputHandle], dtype, customValues, preventEagerUnpacking);
@@ -48003,9 +48003,9 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
      * Create a TF.js tensor out of an existing WebGL texture. A new texture will
      * be created.
      */
-    createTensorFromGPUData(values, shape, dtype) {
-      values.channels = values.channels || "RGBA";
-      const { texture, height, width, channels } = values;
+    createTensorFromGPUData(values2, shape, dtype) {
+      values2.channels = values2.channels || "RGBA";
+      const { texture, height, width, channels } = values2;
       const backend = engine().backend;
       if (!backend.gpgpu.gl.isTexture(texture)) {
         throw new Error(`The texture is invalid. Also, please make sure the texture and the TFJS WebGL backend are using the same canvas. If you want to use your own custom canvas, you have to create and use the custom TFJS WebGL backend created from the canvas through 'new tf.MathBackendWebGL(customCanvas)'.`);
@@ -48953,8 +48953,8 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
     let out;
     if (webglBackend.shouldExecuteOnCPU([x2])) {
       const xTexData = webglBackend.texData.get(x2.dataId);
-      const values = xTexData.values;
-      const outValues = transposeImplCPU(values, x2.shape, x2.dtype, perm, newShape);
+      const values2 = xTexData.values;
+      const outValues = transposeImplCPU(values2, x2.shape, x2.dtype, perm, newShape);
       out = webglBackend.makeTensorInfo(newShape, x2.dtype);
       const outData = webglBackend.texData.get(out.dataId);
       outData.values = outValues;
@@ -50592,8 +50592,8 @@ return (log(1.0 + x) - log(1.0 - x)) / 2.0;`;
       return { dataId: result.dataId, shape: result.shape, dtype };
     }
     if (backend.shouldExecuteOnCPU([x2])) {
-      const values = backend.texData.get(x2.dataId).values;
-      const [resultShape, resultType, resultData] = castImplCPU(values, x2.shape, x2.dtype, dtype);
+      const values2 = backend.texData.get(x2.dataId).values;
+      const [resultShape, resultType, resultData] = castImplCPU(values2, x2.shape, x2.dtype, dtype);
       return backend.makeTensorInfo(resultShape, resultType, resultData);
     }
     if (dtype === "int32") {
@@ -53598,9 +53598,9 @@ return (log(1.0 + x) - log(1.0 - x)) / 2.0;`;
     let { dtype } = attrs;
     dtype = dtype || util_exports.inferDtype(value);
     if (dtype === "string") {
-      const values = util_exports.getArrayFromDType(dtype, util_exports.sizeFromShape(shape));
-      values.fill(value);
-      return backend.makeTensorInfo(shape, dtype, values);
+      const values2 = util_exports.getArrayFromDType(dtype, util_exports.sizeFromShape(shape));
+      values2.fill(value);
+      return backend.makeTensorInfo(shape, dtype, values2);
     } else {
       const program = new FillProgram(shape, value);
       const customValues = [[value]];
@@ -54573,12 +54573,12 @@ return (log(1.0 + x) - log(1.0 - x)) / 2.0;`;
     if (maxInputIsTransposed) {
       if (shouldExecuteOnCPU) {
         const xTexData = backend.texData.get(maxInput.dataId);
-        const values = xTexData.values;
+        const values2 = xTexData.values;
         const newShape = new Array(xRank);
         for (let i2 = 0; i2 < newShape.length; i2++) {
           newShape[i2] = x2.shape[permutedAxes[i2]];
         }
-        const maxInputValues = transposeImplCPU(values, x2.shape, x2.dtype, permutedAxes, newShape);
+        const maxInputValues = transposeImplCPU(values2, x2.shape, x2.dtype, permutedAxes, newShape);
         maxInput = backend.makeTensorInfo(newShape, x2.dtype);
         const maxInputData = backend.texData.get(maxInput.dataId);
         maxInputData.values = maxInputValues;
@@ -54596,8 +54596,8 @@ return (log(1.0 + x) - log(1.0 - x)) / 2.0;`;
     let out;
     if (shouldExecuteOnCPU) {
       const xTexData = backend.texData.get(maxInput.dataId);
-      const values = xTexData.values;
-      const outValues = maxImplCPU(values, util_exports.sizeFromShape(reduceShape), outShape, x2.dtype);
+      const values2 = xTexData.values;
+      const outValues = maxImplCPU(values2, util_exports.sizeFromShape(reduceShape), outShape, x2.dtype);
       out = backend.makeTensorInfo(outShape, x2.dtype);
       const outData = backend.texData.get(out.dataId);
       outData.values = outValues;
@@ -54928,12 +54928,12 @@ return (log(1.0 + x) - log(1.0 - x)) / 2.0;`;
       if (meanInputIsTransposed) {
         if (shouldExecuteOnCPU) {
           const xTexData = webglBackend.texData.get(meanInput.dataId);
-          const values = xTexData.values;
+          const values2 = xTexData.values;
           const newShape = new Array(xRank);
           for (let i2 = 0; i2 < newShape.length; i2++) {
             newShape[i2] = x2.shape[permutedAxes[i2]];
           }
-          const meanInputValues = transposeImplCPU(values, x2.shape, x2.dtype, permutedAxes, newShape);
+          const meanInputValues = transposeImplCPU(values2, x2.shape, x2.dtype, permutedAxes, newShape);
           meanInput = webglBackend.makeTensorInfo(newShape, x2.dtype);
           const meanInputData = webglBackend.texData.get(meanInput.dataId);
           meanInputData.values = meanInputValues;
@@ -55801,15 +55801,15 @@ return a / b;`;
   // node_modules/@tensorflow/tfjs-backend-webgl/dist/kernels/RaggedTensorToTensor.js
   function raggedTensorToTensor2(args) {
     const { inputs, backend, attrs } = args;
-    const { shape, values, defaultValue, rowPartitionTensors } = inputs;
+    const { shape, values: values2, defaultValue, rowPartitionTensors } = inputs;
     const { rowPartitionTypes } = attrs;
     const $shape = backend.readSync(shape.dataId);
-    const $values = backend.readSync(values.dataId);
+    const $values = backend.readSync(values2.dataId);
     const $defaultValue = backend.readSync(defaultValue.dataId);
     const $rowPartitionValues = rowPartitionTensors.map((t3) => backend.readSync(t3.dataId));
     const rowPartitionValuesShapes = rowPartitionTensors.map((t3) => t3.shape);
-    const [outputShape, output] = raggedTensorToTensorImplCPU($shape, shape.shape, $values, values.shape, values.dtype, $defaultValue, defaultValue.shape, $rowPartitionValues, rowPartitionValuesShapes, rowPartitionTypes);
-    return backend.makeTensorInfo(outputShape, values.dtype, output);
+    const [outputShape, output] = raggedTensorToTensorImplCPU($shape, shape.shape, $values, values2.shape, values2.dtype, $defaultValue, defaultValue.shape, $rowPartitionValues, rowPartitionValuesShapes, rowPartitionTypes);
+    return backend.makeTensorInfo(outputShape, values2.dtype, output);
   }
   var raggedTensorToTensorConfig = {
     kernelName: RaggedTensorToTensor,
@@ -55821,8 +55821,8 @@ return a / b;`;
   var range3 = (args) => {
     const { backend, attrs } = args;
     const { start, stop, step: step3, dtype } = attrs;
-    const values = rangeImplCPU(start, stop, step3, dtype);
-    return backend.makeTensorInfo([values.length], dtype, values);
+    const values2 = rangeImplCPU(start, stop, step3, dtype);
+    return backend.makeTensorInfo([values2.length], dtype, values2);
   };
   var rangeConfig = {
     kernelName: Range,
@@ -56760,11 +56760,11 @@ return a / b;`;
   // node_modules/@tensorflow/tfjs-backend-webgl/dist/kernels/SearchSorted.js
   function searchSorted2(args) {
     const { inputs, backend, attrs } = args;
-    const { sortedSequence, values } = inputs;
+    const { sortedSequence, values: values2 } = inputs;
     const { side } = attrs;
-    const program = new SearchSortedProgram(sortedSequence.shape[0], sortedSequence.shape[1], values.shape[1], side);
+    const program = new SearchSortedProgram(sortedSequence.shape[0], sortedSequence.shape[1], values2.shape[1], side);
     const customValues = [[sortedSequence.shape[1]]];
-    return backend.runWebGLProgram(program, [sortedSequence, values], "int32", customValues);
+    return backend.runWebGLProgram(program, [sortedSequence, values2], "int32", customValues);
   }
   var searchSortedConfig = {
     kernelName: SearchSorted,
@@ -56974,7 +56974,7 @@ return a / b;`;
   // node_modules/@tensorflow/tfjs-backend-webgl/dist/kernels/SparseFillEmptyRows.js
   function sparseFillEmptyRows2(args) {
     const { inputs, backend } = args;
-    const { indices, values, denseShape, defaultValue } = inputs;
+    const { indices, values: values2, denseShape, defaultValue } = inputs;
     if (denseShape.shape.length !== 1) {
       throw new Error(`Dense shape must be a vector, saw:
          ${denseShape.shape}`);
@@ -56983,22 +56983,22 @@ return a / b;`;
       throw new Error(`Indices must be a matrix, saw:
          ${indices.shape}`);
     }
-    if (values.shape.length !== 1) {
+    if (values2.shape.length !== 1) {
       throw new Error(`Values must be a vector, saw:
-         ${values.shape}`);
+         ${values2.shape}`);
     }
     if (defaultValue.shape.length !== 0) {
       throw new Error(`Default value must be a scalar, saw:
         ${defaultValue.shape}`);
     }
     const $indices = backend.readSync(indices.dataId);
-    const $values = backend.readSync(values.dataId);
+    const $values = backend.readSync(values2.dataId);
     const $denseShape = backend.readSync(denseShape.dataId);
     const $defaultValue = backend.readSync(defaultValue.dataId)[0];
-    const [outputIndices, outputIndicesShape, outputValues, emptyRowIndicator, reverseIndexMap] = sparseFillEmptyRowsImplCPU($indices, indices.shape, indices.dtype, $values, values.dtype, $denseShape, $defaultValue);
+    const [outputIndices, outputIndicesShape, outputValues, emptyRowIndicator, reverseIndexMap] = sparseFillEmptyRowsImplCPU($indices, indices.shape, indices.dtype, $values, values2.dtype, $denseShape, $defaultValue);
     return [
       backend.makeTensorInfo(outputIndicesShape, indices.dtype, outputIndices),
-      backend.makeTensorInfo([outputIndicesShape[0]], values.dtype, outputValues),
+      backend.makeTensorInfo([outputIndicesShape[0]], values2.dtype, outputValues),
       backend.makeTensorInfo([emptyRowIndicator.length], "bool", new Uint8Array(emptyRowIndicator.map((value) => Number(value)))),
       backend.makeTensorInfo([reverseIndexMap.length], indices.dtype, new Int32Array(reverseIndexMap))
     ];
@@ -57231,8 +57231,8 @@ return a / b;`;
     } else {
       const shouldExecuteOnCPU = backend.shouldExecuteOnCPU([x2]);
       if (shouldExecuteOnCPU) {
-        const values = backend.readSync(x2.dataId);
-        const xBuf = buffer(x2.shape, x2.dtype, values);
+        const values2 = backend.readSync(x2.dataId);
+        const xBuf = buffer(x2.shape, x2.dtype, values2);
         const resultValues = stridedSliceImplCPU(finalShapeSparse, xBuf, $strides, $begin);
         result = backend.makeTensorInfo(finalShape, x2.dtype, resultValues.values);
       } else {
@@ -57285,11 +57285,11 @@ return a / b;`;
     }
     const $input = backend.readSync(input2.dataId);
     const $delimiter = backend.readSync(delimiter.dataId)[0];
-    const [indices, values, shape] = stringSplitImplCPU($input, $delimiter, skipEmpty);
-    const outputSize = values.length;
+    const [indices, values2, shape] = stringSplitImplCPU($input, $delimiter, skipEmpty);
+    const outputSize = values2.length;
     return [
       backend.makeTensorInfo([outputSize, 2], "int32", indices),
-      backend.makeTensorInfo([outputSize], "string", values),
+      backend.makeTensorInfo([outputSize], "string", values2),
       backend.makeTensorInfo([2], "int32", new Int32Array(shape))
     ];
   }
@@ -57595,17 +57595,17 @@ return a / b;`;
     let prevIndices = indices;
     indices = slice2({ inputs: { x: indices }, backend, attrs: { begin: 0, size: [batch, k4] } });
     disposeIntermediateTensorInfoOrNull(backend, prevIndices);
-    let values = gatherV2({ inputs: { x: x2D, indices }, backend, attrs: { axis: 1, batchDims: 1 } });
+    let values2 = gatherV2({ inputs: { x: x2D, indices }, backend, attrs: { axis: 1, batchDims: 1 } });
     disposeIntermediateTensorInfoOrNull(backend, x2D);
     const newShape = xShape.slice(0, -1);
     newShape.push(k4);
     prevIndices = indices;
     indices = reshape3({ inputs: { x: indices }, attrs: { shape: newShape }, backend });
     disposeIntermediateTensorInfoOrNull(backend, prevIndices);
-    const prevValues = values;
-    values = reshape3({ inputs: { x: values }, attrs: { shape: newShape }, backend });
+    const prevValues = values2;
+    values2 = reshape3({ inputs: { x: values2 }, attrs: { shape: newShape }, backend });
     disposeIntermediateTensorInfoOrNull(backend, prevValues);
-    return [values, indices];
+    return [values2, indices];
   }
   var topKConfig = {
     kernelName: TopK,
@@ -57782,8 +57782,8 @@ return a / b;`;
     const { x: x2 } = inputs;
     assertNotComplex(x2, "unique");
     console.warn("WARNING: ", "UI might be locked temporarily as data is being downloaded");
-    const values = backend.readSync(x2.dataId);
-    const { outputValues, outputShape, indices } = uniqueImplCPU(values, axis, x2.shape, x2.dtype);
+    const values2 = backend.readSync(x2.dataId);
+    const { outputValues, outputShape, indices } = uniqueImplCPU(values2, axis, x2.shape, x2.dtype);
     return [
       backend.makeTensorInfo(outputShape, x2.dtype, outputValues),
       backend.makeTensorInfo([indices.length], "int32", indices)
@@ -58294,9 +58294,9 @@ return a / b;`;
         const inputs = node.inputNames.slice(start, end);
         return inputs.map((name) => getTensor2(name, tensorMap, context, resourceManager));
       }
-      const tensor2 = getTensor2(node.inputNames.slice(start)[0], tensorMap, context, resourceManager);
-      const data = tensor2.dataSync();
-      return inputParam.type === "number" ? data[0] : util_exports.toNestedArray(tensor2.shape, data);
+      const tensor3 = getTensor2(node.inputNames.slice(start)[0], tensorMap, context, resourceManager);
+      const data = tensor3.dataSync();
+      return inputParam.type === "number" ? data[0] : util_exports.toNestedArray(tensor3.shape, data);
     }
     const attrParam = node.attrParams[paramName];
     return attrParam && attrParam.value;
@@ -58304,9 +58304,9 @@ return a / b;`;
   function getTensor2(name, tensorsMap, context, resourceManager) {
     const [nodeName, index] = parseNodeName2(name);
     if (resourceManager != null) {
-      const tensor2 = resourceManager.getHashTableHandleByName(nodeName);
-      if (tensor2 != null) {
-        return tensor2;
+      const tensor3 = resourceManager.getHashTableHandleByName(nodeName);
+      if (tensor3 != null) {
+        return tensor3;
       }
     }
     const contextId = context.currentContextIds.find((contextId2) => {
@@ -58351,8 +58351,8 @@ return a / b;`;
     }
     return pad2;
   }
-  function cloneTensor(tensor2) {
-    return tensor2.kept ? tensor2 : clone(tensor2);
+  function cloneTensor(tensor3) {
+    return tensor3.kept ? tensor3 : clone(tensor3);
   }
 
   // node_modules/@tensorflow/tfjs-converter/dist/operations/op_list/arithmetic.js
@@ -65376,8 +65376,8 @@ return a / b;`;
       throw new Error(`Tried to calculate elements of an empty list with non-fully-defined elementShape: ${partialShape}`);
     }
     if (notfullDefinedShape) {
-      tensors.forEach((tensor2) => {
-        partialShape = mergeElementShape(tensor2.shape, partialShape);
+      tensors.forEach((tensor3) => {
+        partialShape = mergeElementShape(tensor3.shape, partialShape);
       });
     }
     if (!fullDefinedShape(partialShape)) {
@@ -65432,9 +65432,9 @@ return a / b;`;
      * Dispose the tensors and idTensor and mark the TensoryArray as closed.
      */
     clearAndClose(keepIds) {
-      this.tensors.forEach((tensor2) => {
-        if (keepIds == null || !keepIds.has(tensor2.tensor.id)) {
-          tensor2.tensor.dispose();
+      this.tensors.forEach((tensor3) => {
+        if (keepIds == null || !keepIds.has(tensor3.tensor.id)) {
+          tensor3.tensor.dispose();
         }
       });
       this.tensors = [];
@@ -65476,7 +65476,7 @@ return a / b;`;
      * @param index number the index to write to.
      * @param tensor
      */
-    write(index, tensor2) {
+    write(index, tensor3) {
       if (this.closed_) {
         throw new Error(`TensorArray ${this.name} has already been closed.`);
       }
@@ -65484,22 +65484,22 @@ return a / b;`;
         throw new Error(`Tried to write to index ${index}, but array is not resizeable and size is: ${this.maxSize}`);
       }
       const t3 = this.tensors[index] || {};
-      if (tensor2.dtype !== this.dtype) {
+      if (tensor3.dtype !== this.dtype) {
         throw new Error(`TensorArray ${this.name}: Could not write to TensorArray index ${index},
-          because the value dtype is ${tensor2.dtype}, but TensorArray dtype is ${this.dtype}.`);
+          because the value dtype is ${tensor3.dtype}, but TensorArray dtype is ${this.dtype}.`);
       }
       if (this.size() === 0 && (this.elementShape == null || this.elementShape.length === 0)) {
-        this.elementShape = tensor2.shape;
+        this.elementShape = tensor3.shape;
       }
-      assertShapesMatchAllowUndefinedSize(this.elementShape, tensor2.shape, `TensorArray ${this.name}: Could not write to TensorArray index ${index}.`);
+      assertShapesMatchAllowUndefinedSize(this.elementShape, tensor3.shape, `TensorArray ${this.name}: Could not write to TensorArray index ${index}.`);
       if (t3.read) {
         throw new Error(`TensorArray ${this.name}: Could not write to TensorArray index ${index}, because it has already been read.`);
       }
       if (t3.written) {
         throw new Error(`TensorArray ${this.name}: Could not write to TensorArray index ${index}, because it has already been written.`);
       }
-      t3.tensor = tensor2;
-      keep(tensor2);
+      t3.tensor = tensor3;
+      keep(tensor3);
       t3.written = true;
       this.tensors[index] = t3;
     }
@@ -65563,18 +65563,18 @@ return a / b;`;
      *    TensorArray is not dynamic, max_value=size().
      * @param tensor Tensor input tensor.
      */
-    scatter(indices, tensor2) {
-      if (tensor2.dtype !== this.dtype) {
-        throw new Error(`TensorArray dtype is ${this.dtype} but tensor has dtype ${tensor2.dtype}`);
+    scatter(indices, tensor3) {
+      if (tensor3.dtype !== this.dtype) {
+        throw new Error(`TensorArray dtype is ${this.dtype} but tensor has dtype ${tensor3.dtype}`);
       }
-      if (indices.length !== tensor2.shape[0]) {
-        throw new Error(`Expected len(indices) == tensor.shape[0], but saw: ${indices.length} vs. ${tensor2.shape[0]}`);
+      if (indices.length !== tensor3.shape[0]) {
+        throw new Error(`Expected len(indices) == tensor.shape[0], but saw: ${indices.length} vs. ${tensor3.shape[0]}`);
       }
       const maxIndex = Math.max(...indices);
       if (!this.dynamicSize && maxIndex >= this.maxSize) {
         throw new Error(`Max index must be < array size (${maxIndex}  vs. ${this.maxSize})`);
       }
-      this.writeMany(indices, unstack(tensor2, 0));
+      this.writeMany(indices, unstack(tensor3, 0));
     }
     /**
      * Split the values of a Tensor into the TensorArray.
@@ -65582,32 +65582,32 @@ return a / b;`;
      *    its first dimension.
      * @param tensor Tensor, the tensor to split.
      */
-    split(length, tensor2) {
-      if (tensor2.dtype !== this.dtype) {
-        throw new Error(`TensorArray dtype is ${this.dtype} but tensor has dtype ${tensor2.dtype}`);
+    split(length, tensor3) {
+      if (tensor3.dtype !== this.dtype) {
+        throw new Error(`TensorArray dtype is ${this.dtype} but tensor has dtype ${tensor3.dtype}`);
       }
       let totalLength = 0;
       const cumulativeLengths = length.map((len) => {
         totalLength += len;
         return totalLength;
       });
-      if (totalLength !== tensor2.shape[0]) {
+      if (totalLength !== tensor3.shape[0]) {
         throw new Error(`Expected sum of lengths to be equal to
           tensor.shape[0], but sum of lengths is
-        ${totalLength}, and tensor's shape is: ${tensor2.shape}`);
+        ${totalLength}, and tensor's shape is: ${tensor3.shape}`);
       }
       if (!this.dynamicSize && length.length !== this.maxSize) {
         throw new Error(`TensorArray's size is not equal to the size of lengths (${this.maxSize} vs. ${length.length}), and the TensorArray is not marked as dynamically resizeable`);
       }
-      const elementPerRow = totalLength === 0 ? 0 : tensor2.size / totalLength;
+      const elementPerRow = totalLength === 0 ? 0 : tensor3.size / totalLength;
       const tensors = [];
       tidy(() => {
-        tensor2 = reshape2(tensor2, [1, totalLength, elementPerRow]);
+        tensor3 = reshape2(tensor3, [1, totalLength, elementPerRow]);
         for (let i2 = 0; i2 < length.length; ++i2) {
           const previousLength = i2 === 0 ? 0 : cumulativeLengths[i2 - 1];
           const indices2 = [0, previousLength, 0];
           const sizes = [1, length[i2], elementPerRow];
-          tensors[i2] = reshape2(slice(tensor2, indices2, sizes), this.elementShape);
+          tensors[i2] = reshape2(slice(tensor3, indices2, sizes), this.elementShape);
         }
         return tensors;
       });
@@ -65635,12 +65635,12 @@ return a / b;`;
       this.elementShape = elementShape;
       this.elementDtype = elementDtype;
       if (tensors != null) {
-        tensors.forEach((tensor2) => {
-          if (elementDtype !== tensor2.dtype) {
-            throw new Error(`Invalid data types; op elements ${elementDtype}, but list elements ${tensor2.dtype}`);
+        tensors.forEach((tensor3) => {
+          if (elementDtype !== tensor3.dtype) {
+            throw new Error(`Invalid data types; op elements ${elementDtype}, but list elements ${tensor3.dtype}`);
           }
-          assertShapesMatchAllowUndefinedSize(elementShape, tensor2.shape, "TensorList shape mismatch: ");
-          keep(tensor2);
+          assertShapesMatchAllowUndefinedSize(elementShape, tensor3.shape, "TensorList shape mismatch: ");
+          keep(tensor3);
         });
       }
       this.idTensor = scalar(0);
@@ -65660,9 +65660,9 @@ return a / b;`;
      * Dispose the tensors and idTensor and clear the tensor list.
      */
     clearAndClose(keepIds) {
-      this.tensors.forEach((tensor2) => {
-        if (keepIds == null || !keepIds.has(tensor2.id)) {
-          tensor2.dispose();
+      this.tensors.forEach((tensor3) => {
+        if (keepIds == null || !keepIds.has(tensor3.id)) {
+          tensor3.dispose();
         }
       });
       this.tensors.length = 0;
@@ -65691,7 +65691,7 @@ return a / b;`;
       assertShapesMatchAllowUndefinedSize(elementShape, this.elementShape, "TensorList shape mismatch: ");
       const outputElementShape = inferElementShape(this.elementShape, this.tensors, elementShape);
       return tidy(() => {
-        const reshapedTensors = this.tensors.map((tensor2) => reshape2(tensor2, outputElementShape));
+        const reshapedTensors = this.tensors.map((tensor3) => reshape2(tensor3, outputElementShape));
         return stack(reshapedTensors, 0);
       });
     }
@@ -65708,25 +65708,25 @@ return a / b;`;
         throw new Error("Trying to pop from an empty list.");
       }
       const outputElementShape = inferElementShape(this.elementShape, this.tensors, elementShape);
-      const tensor2 = this.tensors.pop();
-      tensor2.kept = false;
-      assertShapesMatchAllowUndefinedSize(tensor2.shape, elementShape, "TensorList shape mismatch: ");
-      return reshape2(tensor2, outputElementShape);
+      const tensor3 = this.tensors.pop();
+      tensor3.kept = false;
+      assertShapesMatchAllowUndefinedSize(tensor3.shape, elementShape, "TensorList shape mismatch: ");
+      return reshape2(tensor3, outputElementShape);
     }
     /**
      * Push a tensor to the end of the list.
      * @param tensor Tensor to be pushed.
      */
-    pushBack(tensor2) {
-      if (tensor2.dtype !== this.elementDtype) {
-        throw new Error(`Invalid data types; op elements ${tensor2.dtype}, but list elements ${this.elementDtype}`);
+    pushBack(tensor3) {
+      if (tensor3.dtype !== this.elementDtype) {
+        throw new Error(`Invalid data types; op elements ${tensor3.dtype}, but list elements ${this.elementDtype}`);
       }
-      assertShapesMatchAllowUndefinedSize(tensor2.shape, this.elementShape, "TensorList shape mismatch: ");
+      assertShapesMatchAllowUndefinedSize(tensor3.shape, this.elementShape, "TensorList shape mismatch: ");
       if (this.maxNumElements === this.size()) {
         throw new Error(`Trying to push element into a full list.`);
       }
-      keep(tensor2);
-      this.tensors.push(tensor2);
+      keep(tensor3);
+      this.tensors.push(tensor3);
     }
     /**
      * Update the size of the list.
@@ -65771,19 +65771,19 @@ return a / b;`;
      * @param elementIndex index of the tensor
      * @param tensor the tensor to be inserted into the list
      */
-    setItem(elementIndex, tensor2) {
-      if (tensor2.dtype !== this.elementDtype) {
-        throw new Error(`Invalid data types; op elements ${tensor2.dtype}, but list elements ${this.elementDtype}`);
+    setItem(elementIndex, tensor3) {
+      if (tensor3.dtype !== this.elementDtype) {
+        throw new Error(`Invalid data types; op elements ${tensor3.dtype}, but list elements ${this.elementDtype}`);
       }
       if (elementIndex < 0 || this.maxNumElements !== -1 && elementIndex >= this.maxNumElements) {
         throw new Error(`Trying to set element ${elementIndex} in a list with max ${this.maxNumElements} elements.`);
       }
-      assertShapesMatchAllowUndefinedSize(this.elementShape, tensor2.shape, "TensorList shape mismatch: ");
-      keep(tensor2);
+      assertShapesMatchAllowUndefinedSize(this.elementShape, tensor3.shape, "TensorList shape mismatch: ");
+      keep(tensor3);
       if (this.tensors[elementIndex] != null) {
         this.tensors[elementIndex].kept = false;
       }
-      this.tensors[elementIndex] = tensor2;
+      this.tensors[elementIndex] = tensor3;
     }
     /**
      * Return selected values in the TensorList as a stacked Tensor. All of
@@ -65827,64 +65827,64 @@ return a / b;`;
       });
     }
   };
-  function fromTensor(tensor2, elementShape, elementDtype) {
-    const dtype = tensor2.dtype;
-    if (tensor2.shape.length < 1) {
-      throw new Error(`Tensor must be at least a vector, but saw shape: ${tensor2.shape}`);
+  function fromTensor(tensor3, elementShape, elementDtype) {
+    const dtype = tensor3.dtype;
+    if (tensor3.shape.length < 1) {
+      throw new Error(`Tensor must be at least a vector, but saw shape: ${tensor3.shape}`);
     }
-    if (tensor2.dtype !== elementDtype) {
-      throw new Error(`Invalid data types; op elements ${tensor2.dtype}, but list elements ${elementDtype}`);
+    if (tensor3.dtype !== elementDtype) {
+      throw new Error(`Invalid data types; op elements ${tensor3.dtype}, but list elements ${elementDtype}`);
     }
-    const tensorElementShape = tensor2.shape.slice(1);
+    const tensorElementShape = tensor3.shape.slice(1);
     assertShapesMatchAllowUndefinedSize(tensorElementShape, elementShape, "TensorList shape mismatch: ");
-    const tensorList = unstack(tensor2);
+    const tensorList = unstack(tensor3);
     return new TensorList(tensorList, elementShape, dtype);
   }
   function reserve(elementShape, elementDtype, numElements, maxNumElements) {
     return new TensorList([], elementShape, elementDtype, maxNumElements);
   }
-  function scatter(tensor2, indices, elementShape, numElements) {
-    if (indices.length !== tensor2.shape[0]) {
-      throw new Error(`Expected len(indices) == tensor.shape[0], but saw: ${indices.length} vs. ${tensor2.shape[0]}`);
+  function scatter(tensor3, indices, elementShape, numElements) {
+    if (indices.length !== tensor3.shape[0]) {
+      throw new Error(`Expected len(indices) == tensor.shape[0], but saw: ${indices.length} vs. ${tensor3.shape[0]}`);
     }
     const maxIndex = Math.max(...indices);
     if (numElements != null && numElements !== -1 && maxIndex >= numElements) {
       throw new Error(`Max index must be < array size (${maxIndex}  vs. ${numElements})`);
     }
-    const list = new TensorList([], elementShape, tensor2.dtype, numElements);
-    const tensors = unstack(tensor2, 0);
+    const list = new TensorList([], elementShape, tensor3.dtype, numElements);
+    const tensors = unstack(tensor3, 0);
     indices.forEach((value, index) => {
       list.setItem(value, tensors[index]);
     });
     return list;
   }
-  function split3(tensor2, length, elementShape) {
+  function split3(tensor3, length, elementShape) {
     let totalLength = 0;
     const cumulativeLengths = length.map((len) => {
       totalLength += len;
       return totalLength;
     });
-    if (totalLength !== tensor2.shape[0]) {
+    if (totalLength !== tensor3.shape[0]) {
       throw new Error(`Expected sum of lengths to be equal to
           tensor.shape[0], but sum of lengths is
-        ${totalLength}, and tensor's shape is: ${tensor2.shape}`);
+        ${totalLength}, and tensor's shape is: ${tensor3.shape}`);
     }
-    const shapeWithoutFirstDim = tensor2.shape.slice(1);
+    const shapeWithoutFirstDim = tensor3.shape.slice(1);
     const outputElementShape = mergeElementShape(shapeWithoutFirstDim, elementShape);
-    const elementPerRow = totalLength === 0 ? 0 : tensor2.size / totalLength;
+    const elementPerRow = totalLength === 0 ? 0 : tensor3.size / totalLength;
     const tensors = tidy(() => {
       const tensors2 = [];
-      tensor2 = reshape2(tensor2, [1, totalLength, elementPerRow]);
+      tensor3 = reshape2(tensor3, [1, totalLength, elementPerRow]);
       for (let i2 = 0; i2 < length.length; ++i2) {
         const previousLength = i2 === 0 ? 0 : cumulativeLengths[i2 - 1];
         const indices = [0, previousLength, 0];
         const sizes = [1, length[i2], elementPerRow];
-        tensors2[i2] = reshape2(slice(tensor2, indices, sizes), outputElementShape);
+        tensors2[i2] = reshape2(slice(tensor3, indices, sizes), outputElementShape);
       }
-      tensor2.dispose();
+      tensor3.dispose();
       return tensors2;
     });
-    const list = new TensorList([], elementShape, tensor2.dtype, length.length);
+    const list = new TensorList([], elementShape, tensor3.dtype, length.length);
     for (let i2 = 0; i2 < tensors.length; i2++) {
       list.setItem(i2, tensors[i2]);
     }
@@ -65913,28 +65913,28 @@ return a / b;`;
         const condFunc = getParamValue2("cond", node, tensorMap, context);
         const args = getParamValue2("args", node, tensorMap, context);
         const condResult = await context.functionMap[condFunc].executeFunctionAsync(args, context.tensorArrayMap, context.tensorListMap);
-        const argIds = args.map((tensor2) => tensor2.id);
+        const argIds = args.map((tensor3) => tensor3.id);
         let condValue = await condResult[0].data();
-        condResult.forEach((tensor2) => {
-          if (!tensor2.kept && argIds.indexOf(tensor2.id) === -1) {
-            tensor2.dispose();
+        condResult.forEach((tensor3) => {
+          if (!tensor3.kept && argIds.indexOf(tensor3.id) === -1) {
+            tensor3.dispose();
           }
         });
         let result = args;
         while (condValue[0]) {
           const origResult = result;
           result = await context.functionMap[bodyFunc].executeFunctionAsync(result, context.tensorArrayMap, context.tensorListMap);
-          const resultIds = result.map((tensor2) => tensor2.id);
-          origResult.forEach((tensor2) => {
-            if (!tensor2.kept && argIds.indexOf(tensor2.id) === -1 && resultIds.indexOf(tensor2.id) === -1) {
-              tensor2.dispose();
+          const resultIds = result.map((tensor3) => tensor3.id);
+          origResult.forEach((tensor3) => {
+            if (!tensor3.kept && argIds.indexOf(tensor3.id) === -1 && resultIds.indexOf(tensor3.id) === -1) {
+              tensor3.dispose();
             }
           });
           const condResult2 = await context.functionMap[condFunc].executeFunctionAsync(result, context.tensorArrayMap, context.tensorListMap);
           condValue = await condResult2[0].data();
-          condResult2.forEach((tensor2) => {
-            if (!tensor2.kept && argIds.indexOf(tensor2.id) === -1 && resultIds.indexOf(tensor2.id) === -1) {
-              tensor2.dispose();
+          condResult2.forEach((tensor3) => {
+            if (!tensor3.kept && argIds.indexOf(tensor3.id) === -1 && resultIds.indexOf(tensor3.id) === -1) {
+              tensor3.dispose();
             }
           });
         }
@@ -66101,10 +66101,10 @@ return a / b;`;
         return [tensorList.stack(elementShape, elementDtype, numElements)];
       }
       case "TensorListFromTensor": {
-        const tensor2 = getParamValue2("tensor", node, tensorMap, context);
+        const tensor3 = getParamValue2("tensor", node, tensorMap, context);
         const elementShape = getParamValue2("elementShape", node, tensorMap, context);
         const elementDtype = getParamValue2("elementDType", node, tensorMap, context);
-        const tensorList = fromTensor(tensor2, elementShape, elementDtype);
+        const tensorList = fromTensor(tensor3, elementShape, elementDtype);
         context.addTensorList(tensorList);
         return [tensorList.idTensor];
       }
@@ -66444,8 +66444,8 @@ return a / b;`;
     switch (node.op) {
       case "LowerBound": {
         const sortedSequence = getParamValue2("sortedSequence", node, tensorMap, context);
-        const values = getParamValue2("values", node, tensorMap, context);
-        return [ops.lowerBound(sortedSequence, values)];
+        const values2 = getParamValue2("values", node, tensorMap, context);
+        return [ops.lowerBound(sortedSequence, values2)];
       }
       case "TopKV2": {
         const x2 = getParamValue2("x", node, tensorMap, context);
@@ -66456,8 +66456,8 @@ return a / b;`;
       }
       case "UpperBound": {
         const sortedSequence = getParamValue2("sortedSequence", node, tensorMap, context);
-        const values = getParamValue2("values", node, tensorMap, context);
-        return [ops.upperBound(sortedSequence, values)];
+        const values2 = getParamValue2("values", node, tensorMap, context);
+        return [ops.upperBound(sortedSequence, values2)];
       }
       case "Unique": {
         const x2 = getParamValue2("x", node, tensorMap, context);
@@ -66566,13 +66566,13 @@ return a / b;`;
      * @param keys Keys to store in the hashtable.
      * @param values Values to store in the hashtable.
      */
-    async import(keys, values) {
-      this.checkKeyAndValueTensor(keys, values);
+    async import(keys, values2) {
+      this.checkKeyAndValueTensor(keys, values2);
       const $keys = await keys.data();
       this.tensorMap.forEach((value) => value.dispose());
       this.tensorMap.clear();
       return tidy(() => {
-        const $values = unstack(values);
+        const $values = unstack(values2);
         const keysLength = $keys.length;
         const valuesLength = $values.length;
         util_exports.assert(keysLength === valuesLength, () => `The number of elements doesn't match, keys has ${keysLength} elements, the values has ${valuesLength} elements.`);
@@ -66650,9 +66650,9 @@ return a / b;`;
       case "LookupTableImportV2": {
         const handle = getParamValue2("tableHandle", node, tensorMap, context, resourceManager);
         const keys = getParamValue2("keys", node, tensorMap, context);
-        const values = getParamValue2("values", node, tensorMap, context);
+        const values2 = getParamValue2("values", node, tensorMap, context);
         const hashTable = resourceManager.getHashTableById(handle.id);
-        return [await hashTable.import(keys, values)];
+        return [await hashTable.import(keys, values2)];
       }
       case "LookupTableFind":
       case "LookupTableFindV2": {
@@ -66969,8 +66969,8 @@ return a / b;`;
         const ellipsisMask = getParamValue2("ellipsisMask", node, tensorMap, context);
         const newAxisMask = getParamValue2("newAxisMask", node, tensorMap, context);
         const shrinkAxisMask = getParamValue2("shrinkAxisMask", node, tensorMap, context);
-        const tensor2 = getParamValue2("x", node, tensorMap, context);
-        return [ops.stridedSlice(tensor2, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask)];
+        const tensor3 = getParamValue2("x", node, tensorMap, context);
+        return [ops.stridedSlice(tensor3, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask)];
       }
       case "Pack": {
         return tidy(() => {
@@ -66978,20 +66978,20 @@ return a / b;`;
           const tensors = getParamValue2("tensors", node, tensorMap, context);
           const shape = tensors[0].shape;
           const squeezedShape = ops.squeeze(tensors[0]).shape;
-          const mapped = tensors.map((tensor2) => {
-            const sameShape = util_exports.arraysEqual(tensor2.shape, shape);
-            if (!sameShape && !util_exports.arraysEqual(ops.squeeze(tensor2).shape, squeezedShape)) {
+          const mapped = tensors.map((tensor3) => {
+            const sameShape = util_exports.arraysEqual(tensor3.shape, shape);
+            if (!sameShape && !util_exports.arraysEqual(ops.squeeze(tensor3).shape, squeezedShape)) {
               throw new Error("the input tensors shape does not match");
             }
-            return sameShape ? tensor2 : ops.reshape(tensor2, shape);
+            return sameShape ? tensor3 : ops.reshape(tensor3, shape);
           });
           return [ops.stack(mapped, axis)];
         });
       }
       case "Unpack": {
         const axis = getParamValue2("axis", node, tensorMap, context);
-        const tensor2 = getParamValue2("tensor", node, tensorMap, context);
-        return ops.unstack(tensor2, axis);
+        const tensor3 = getParamValue2("tensor", node, tensorMap, context);
+        return ops.unstack(tensor3, axis);
       }
       case "Tile": {
         const reps = getParamValue2("reps", node, tensorMap, context);
@@ -67001,14 +67001,14 @@ return a / b;`;
       case "SplitV": {
         const axis = getParamValue2("axis", node, tensorMap, context);
         const numOrSizeSplits = getParamValue2("numOrSizeSplits", node, tensorMap, context);
-        const tensor2 = getParamValue2("x", node, tensorMap, context);
-        return ops.split(tensor2, numOrSizeSplits, axis);
+        const tensor3 = getParamValue2("x", node, tensorMap, context);
+        return ops.split(tensor3, numOrSizeSplits, axis);
       }
       case "ScatterNd": {
         const indices = getParamValue2("indices", node, tensorMap, context);
-        const values = getParamValue2("values", node, tensorMap, context);
+        const values2 = getParamValue2("values", node, tensorMap, context);
         const shape = getParamValue2("shape", node, tensorMap, context);
-        return [ops.scatterND(indices, values, shape)];
+        return [ops.scatterND(indices, values2, shape)];
       }
       case "GatherNd": {
         const x2 = getParamValue2("x", node, tensorMap, context);
@@ -67084,8 +67084,8 @@ return a / b;`;
         return [nGrams, nGramsSplits];
       }
       case "StringSplit": {
-        const { indices, values, shape } = ops.string.stringSplit(getParamValue2("input", node, tensorMap, context), getParamValue2("delimiter", node, tensorMap, context), getParamValue2("skipEmpty", node, tensorMap, context));
-        return [indices, values, shape];
+        const { indices, values: values2, shape } = ops.string.stringSplit(getParamValue2("input", node, tensorMap, context), getParamValue2("delimiter", node, tensorMap, context), getParamValue2("skipEmpty", node, tensorMap, context));
+        return [indices, values2, shape];
       }
       case "StringToHashBucketFast": {
         const output = ops.string.stringToHashBucketFast(getParamValue2("input", node, tensorMap, context), getParamValue2("numBuckets", node, tensorMap, context));
@@ -67488,7 +67488,7 @@ return a / b;`;
       return this.parent ? this.parent.weightMap : this._weightMap;
     }
     set weightMap(weightMap) {
-      const weightIds = Object.keys(weightMap).map((key) => weightMap[key].map((tensor2) => tensor2.id));
+      const weightIds = Object.keys(weightMap).map((key) => weightMap[key].map((tensor3) => tensor3.id));
       this._weightIds = [].concat(...weightIds);
       this._weightMap = weightMap;
     }
@@ -67554,11 +67554,11 @@ return a / b;`;
       }
       return getNodesInTopologicalOrder2(this.graph, this.weightMap, executionInfo);
     }
-    cloneAndKeepTensor(tensor2) {
-      if (tensor2 == null) {
+    cloneAndKeepTensor(tensor3) {
+      if (tensor3 == null) {
         return null;
       }
-      const clone2 = tensor2.clone();
+      const clone2 = tensor3.clone();
       keep(clone2);
       return clone2;
     }
@@ -67566,8 +67566,8 @@ return a / b;`;
       if (!tensors) {
         return null;
       }
-      const clonedTensor = tensors.map((tensor2) => {
-        return this.cloneAndKeepTensor(tensor2);
+      const clonedTensor = tensors.map((tensor3) => {
+        return this.cloneAndKeepTensor(tensor3);
       });
       return clonedTensor;
     }
@@ -67651,30 +67651,30 @@ return a / b;`;
       });
     }
     getFrozenTensorIds(tensorMap) {
-      const ids = [].concat.apply([], Object.keys(tensorMap).map((key) => tensorMap[key]).map((tensors) => tensors.map((tensor2) => tensor2.id)));
+      const ids = [].concat.apply([], Object.keys(tensorMap).map((key) => tensorMap[key]).map((tensors) => tensors.map((tensor3) => tensor3.id)));
       return new Set(ids);
     }
     checkTensorForDisposal(nodeName, node, tensorMap, context, tensorsToKeep, outputNames, intermediateTensorConsumerCount) {
       if (node.category === "control" || outputNames.indexOf(nodeName) !== -1) {
         return;
       }
-      tensorMap[nodeName].forEach((tensor2) => {
-        if (tensor2 != null) {
-          intermediateTensorConsumerCount[tensor2.id] = (intermediateTensorConsumerCount[tensor2.id] || 0) + node.children.length;
+      tensorMap[nodeName].forEach((tensor3) => {
+        if (tensor3 != null) {
+          intermediateTensorConsumerCount[tensor3.id] = (intermediateTensorConsumerCount[tensor3.id] || 0) + node.children.length;
         }
       });
       node.inputs.forEach((input2) => {
         if (input2.category !== "control") {
           const tensors = getTensorsForCurrentContenxt2(input2.name, tensorMap, context);
           if (tensors != null) {
-            tensors.forEach((tensor2) => {
-              if (tensor2 && !tensor2.kept && !tensorsToKeep.has(tensor2.id)) {
-                const count2 = intermediateTensorConsumerCount[tensor2.id];
+            tensors.forEach((tensor3) => {
+              if (tensor3 && !tensor3.kept && !tensorsToKeep.has(tensor3.id)) {
+                const count2 = intermediateTensorConsumerCount[tensor3.id];
                 if (count2 === 1) {
-                  tensor2.dispose();
-                  delete intermediateTensorConsumerCount[tensor2.id];
+                  tensor3.dispose();
+                  delete intermediateTensorConsumerCount[tensor3.id];
                 } else if (count2 != null) {
-                  intermediateTensorConsumerCount[tensor2.id]--;
+                  intermediateTensorConsumerCount[tensor3.id]--;
                 }
               }
             });
@@ -67699,9 +67699,9 @@ return a / b;`;
         return;
       }
       Object.values(this.clonedTensorsMap).forEach((tensorsList) => {
-        for (const tensor2 of tensorsList) {
-          if (tensor2 && !tensor2.isDisposed) {
-            tensor2.dispose();
+        for (const tensor3 of tensorsList) {
+          if (tensor3 && !tensor3.isDisposed) {
+            tensor3.dispose();
           }
         }
       });
@@ -67749,9 +67749,9 @@ return a / b;`;
       const inputIds = Object.keys(inputs).map((name) => inputs[name].id);
       const keepIds = /* @__PURE__ */ new Set([...outputIds, ...inputIds, ...this.weightIds]);
       Object.values(tensorsMap).forEach((tensorsList) => {
-        tensorsList.forEach((tensor2) => {
-          if (tensor2 && !tensor2.isDisposed && !keepIds.has(tensor2.id)) {
-            tensor2.dispose();
+        tensorsList.forEach((tensor3) => {
+          if (tensor3 && !tensor3.isDisposed && !keepIds.has(tensor3.id)) {
+            tensor3.dispose();
           }
         });
       });
@@ -67761,8 +67761,8 @@ return a / b;`;
       return results;
     }
     async executeFunctionAsync(inputs, tensorArrayMap, tensorListMap) {
-      const mappedInputs = inputs.reduce((map, tensor2, index) => {
-        map[this.inputs[index].name] = tensor2;
+      const mappedInputs = inputs.reduce((map, tensor3, index) => {
+        map[this.inputs[index].name] = tensor3;
         return map;
       }, {});
       return this._executeAsync(mappedInputs, this.outputNodes, true, tensorArrayMap, tensorListMap);
@@ -67886,7 +67886,7 @@ return a / b;`;
      * Releases the memory used by the weight tensors.
      */
     dispose() {
-      Object.keys(this.weightMap).forEach((key) => this.weightMap[key].forEach((tensor2) => tensor2.dispose()));
+      Object.keys(this.weightMap).forEach((key) => this.weightMap[key].forEach((tensor3) => tensor3.dispose()));
     }
     checkInputShapeAndType(inputs) {
       Object.keys(inputs).forEach((name) => {
@@ -67907,9 +67907,9 @@ return a / b;`;
       var _a2, _b;
       const result = {};
       for (const inputName in inputs) {
-        const tensor2 = (_b = (_a2 = this._signature) === null || _a2 === void 0 ? void 0 : _a2.inputs) === null || _b === void 0 ? void 0 : _b[inputName];
-        if (tensor2 != null) {
-          result[tensor2.name] = inputs[inputName];
+        const tensor3 = (_b = (_a2 = this._signature) === null || _a2 === void 0 ? void 0 : _a2.inputs) === null || _b === void 0 ? void 0 : _b[inputName];
+        if (tensor3 != null) {
+          result[tensor3.name] = inputs[inputName];
         } else {
           result[inputName] = inputs[inputName];
         }
@@ -67928,9 +67928,9 @@ return a / b;`;
     mapOutputs(outputs) {
       return outputs.map((name) => {
         var _a2, _b;
-        const tensor2 = (_b = (_a2 = this._signature) === null || _a2 === void 0 ? void 0 : _a2.outputs) === null || _b === void 0 ? void 0 : _b[name];
-        if (tensor2 != null) {
-          return tensor2.name;
+        const tensor3 = (_b = (_a2 = this._signature) === null || _a2 === void 0 ? void 0 : _a2.outputs) === null || _b === void 0 ? void 0 : _b[name];
+        if (tensor3 != null) {
+          return tensor3.name;
         }
         return name;
       }, {});
@@ -68271,9 +68271,9 @@ return a / b;`;
         const signatureInputs = (_a2 = this.signature) === null || _a2 === void 0 ? void 0 : _a2.inputs;
         if (signatureInputs != null) {
           for (const input2 in signatureInputs) {
-            const tensor2 = signatureInputs[input2];
-            if (tensor2.resourceId != null) {
-              inputs[input2] = this.resourceIdToCapturedInput[tensor2.resourceId];
+            const tensor3 = signatureInputs[input2];
+            if (tensor3.resourceId != null) {
+              inputs[input2] = this.resourceIdToCapturedInput[tensor3.resourceId];
             }
           }
         }
@@ -73931,7 +73931,7 @@ return a / b;`;
         }
       });
     }
-    calculateIndexes(face, values) {
+    calculateIndexes(face, values2) {
       if (face === void 0) {
         this.handleNotAtScreen();
         const indexPackage2 = {
@@ -73967,10 +73967,10 @@ return a / b;`;
       let smile = this.calculateSmile(face);
       let eyesHeight = this.calculateEyesHeight(face);
       let attentionClasses;
-      if (values[0] > values[1]) {
+      if (values2[0] > values2[1]) {
         attentionClasses = true;
       }
-      if (values[0] < values[1]) {
+      if (values2[0] < values2[1]) {
         attentionClasses = false;
       }
       let attention = attentionClasses ? 1 : 0;
@@ -74374,6 +74374,13 @@ return a / b;`;
   var indexesController;
   var indexCallback;
   var loadedModel;
+  var frame2 = 0;
+  var virtualVideoCanvas;
+  var virtualVideoCTX;
+  var virtualCanvas;
+  var tensor2;
+  var prediction;
+  var values;
   async function renderResult(callback) {
     if (camera.video.readyState < 2) {
       await new Promise((resolve) => {
@@ -74389,19 +74396,25 @@ return a / b;`;
           flipHorizontal: false
         });
         if (faces.length !== 0) {
-          const virtualVideoCanvas = document.createElement("canvas");
-          virtualVideoCanvas.width = camera.video.videoHeight;
-          virtualVideoCanvas.height = camera.video.videoHeight;
-          const virtualVideoCTX = virtualVideoCanvas.getContext("2d");
-          virtualVideoCTX.drawImage(camera.video, (camera.video.videoWidth - camera.video.videoHeight) / 2, 0, camera.video.videoHeight, camera.video.videoHeight, 0, 0, camera.video.videoHeight, camera.video.videoHeight);
-          const virtualCanvas = document.createElement("canvas");
-          virtualCanvas.width = 224;
-          virtualCanvas.height = 224;
-          const virtualCTX = virtualCanvas.getContext("2d");
-          virtualCTX.drawImage(virtualVideoCanvas, 0, 0, 224, 224);
-          const tensor2 = Nf.fromPixels(virtualCanvas).toFloat().sub(224).div(224).reshape([1, 224, 224, 3]);
-          const prediction = await loadedModel.predict(tensor2);
-          const values = await prediction.dataSync();
+          if (frame2 > 30) {
+            frame2 = 0;
+          }
+          if (frame2 == 0) {
+            virtualVideoCanvas = document.createElement("canvas");
+            virtualVideoCanvas.width = camera.video.videoHeight;
+            virtualVideoCanvas.height = camera.video.videoHeight;
+            virtualVideoCTX = virtualVideoCanvas.getContext("2d");
+            virtualVideoCTX.drawImage(camera.video, (camera.video.videoWidth - camera.video.videoHeight) / 2, 0, camera.video.videoHeight, camera.video.videoHeight, 0, 0, camera.video.videoHeight, camera.video.videoHeight);
+            virtualCanvas = document.createElement("canvas");
+            virtualCanvas.width = 224;
+            virtualCanvas.height = 224;
+            virtualCTX = virtualCanvas.getContext("2d");
+            virtualCTX.drawImage(virtualVideoCanvas, 0, 0, 224, 224);
+            tensor2 = Nf.fromPixels(virtualCanvas).toFloat().sub(224).div(224).reshape([1, 224, 224, 3]);
+            prediction = await loadedModel.predict(tensor2);
+            values = await prediction.dataSync();
+          }
+          frame2++;
           let activeFaces = 0;
           const attentions = [];
           for (const face of faces) {

@@ -73974,7 +73974,6 @@ return a / b;`;
         attentionClasses = false;
       }
       let attention = attentionClasses ? 1 : 0;
-      this.handleAttention(attention);
       if (this.initialHeadHeight !== null) {
         const scaleCoefficient = this.headHeight / this.initialHeadHeight;
         this.CONSTANTS.DEFAULT.SMILE_SIZE = this.initialHeadHeight * 0.4;

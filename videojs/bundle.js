@@ -73974,6 +73974,7 @@ return a / b;`;
         attentionClasses = false;
       }
       let attention = attentionClasses ? 1 : 0;
+      console.log({ valueYES: values2[0], valueNO: values2[1], attention });
       if (this.initialHeadHeight !== null) {
         const scaleCoefficient = this.headHeight / this.initialHeadHeight;
         this.CONSTANTS.DEFAULT.SMILE_SIZE = this.initialHeadHeight * 0.4;
@@ -74381,6 +74382,24 @@ return a / b;`;
   var tensor2;
   var prediction;
   var values;
+  function cropTensor(img, grayscaleModel, grayscaleInput) {
+    var size = Math.min(img.shape[0], img.shape[1]);
+    var centerHeight = img.shape[0] / 2;
+    var beginHeight = centerHeight - size / 2;
+    var centerWidth = img.shape[1] / 2;
+    var beginWidth = centerWidth - size / 2;
+    if (grayscaleModel && !grayscaleInput) {
+      var grayscale_cropped = img.slice([beginHeight, beginWidth, 0], [size, size, 3]);
+      grayscale_cropped = grayscale_cropped.reshape([size * size, 1, 3]);
+      var rgb_weights = [0.2989, 0.587, 0.114];
+      grayscale_cropped = tc(grayscale_cropped, rgb_weights);
+      grayscale_cropped = grayscale_cropped.reshape([size, size, 3]);
+      grayscale_cropped = vl(grayscale_cropped, -1);
+      grayscale_cropped = dr(grayscale_cropped, -1);
+      return grayscale_cropped;
+    }
+    return img.slice([beginHeight, beginWidth, 0], [size, size, 3]);
+  }
   async function renderResult(callback) {
     if (camera.video.readyState < 2) {
       await new Promise((resolve) => {
@@ -74396,7 +74415,7 @@ return a / b;`;
           flipHorizontal: false
         });
         if (faces.length !== 0) {
-          if (frame2 > 30) {
+          if (frame2 > 3) {
             frame2 = 0;
           }
           if (frame2 == 0) {
@@ -74405,12 +74424,16 @@ return a / b;`;
             virtualVideoCanvas.height = camera.video.videoHeight;
             virtualVideoCTX = virtualVideoCanvas.getContext("2d");
             virtualVideoCTX.drawImage(camera.video, (camera.video.videoWidth - camera.video.videoHeight) / 2, 0, camera.video.videoHeight, camera.video.videoHeight, 0, 0, camera.video.videoHeight, camera.video.videoHeight);
+            virtualVideoCTX.scale(0.46666666, 0.4666666);
             virtualCanvas = document.createElement("canvas");
             virtualCanvas.width = 224;
             virtualCanvas.height = 224;
             virtualCTX = virtualCanvas.getContext("2d");
             virtualCTX.drawImage(virtualVideoCanvas, 0, 0, 224, 224);
-            tensor2 = Nf.fromPixels(virtualCanvas).toFloat().sub(224).div(224).reshape([1, 224, 224, 3]);
+            const pixels = Nf.fromPixels(virtualCanvas);
+            const cropped = cropTensor(pixels, void 0);
+            const batchedImage = cropped.expandDims(0);
+            tensor2 = batchedImage.toFloat().div(An(127)).sub(An(1));
             prediction = await loadedModel.predict(tensor2);
             values = await prediction.dataSync();
           }

@@ -11141,6 +11141,9 @@
   function ze(t3) {
     a().getBool("DEPRECATION_WARNINGS_ENABLED") && console.warn(t3 + " You can disable deprecation warnings with tf.disableDeprecationWarnings().");
   }
+  function He() {
+    return Nt;
+  }
   function qe() {
     return Nt.memory();
   }
@@ -55430,7 +55433,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
         }), t4.H[e3] = r3, i3.return(r3));
       });
     }
-    function He(t4, e3, n3) {
+    function He2(t4, e3, n3) {
       var r3, i3, o3, u3, s3, c3, h2, l4, f3, d3, p3, g3, v3, y3;
       return M2(function(w3) {
         switch (w3.g) {
@@ -55511,7 +55514,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
         for (var o4 = {}, a3 = 0; a3 < e3.wants.length; ++a3)
           o4[r3[a3]] = i4.get(a3);
         var u3 = t4.listeners[n3];
-        u3 && (t4.D = He(t4, o4, e3.outs).then(function(n4) {
+        u3 && (t4.D = He2(t4, o4, e3.outs).then(function(n4) {
           n4 = u3(n4);
           for (var i5 = 0; i5 < e3.wants.length; ++i5) {
             var a4 = o4[r3[i5]];
@@ -56559,7 +56562,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
     return $t2(Yt2.MediaPipeFaceMesh, {
       runtime: "mediapipe",
       refineLandmarks: true,
-      maxFaces: 2,
+      maxFaces: 1,
       solutionPath: `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh`
     });
   }
@@ -59988,6 +59991,7 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
             frame2 = 0;
           }
           if (frame2 == 0) {
+            He().startScope();
             virtualVideoCanvas = document.createElement("canvas");
             virtualVideoCanvas.width = camera.video.videoHeight;
             virtualVideoCanvas.height = camera.video.videoHeight;
@@ -60005,16 +60009,24 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
             tensor2 = batchedImage.toFloat().div(An(127)).sub(An(1));
             prediction = await loadedModel.predict(tensor2);
             values = await prediction.dataSync();
-            await tensor2.dispose();
-            await pixels.dispose();
-            await cropped.dispose();
-            await batchedImage.dispose();
+            Xe(tensor2);
+            Xe(pixels);
+            Xe(cropped);
+            Xe(batchedImage);
+            Xe(prediction);
             virtualVideoCTX.clearRect(0, 0, virtualVideoCanvas.width, virtualVideoCanvas.height);
             virtualCTX.clearRect(0, 0, virtualCanvas.width, virtualCanvas.height);
             virtualVideoCanvas.remove();
             virtualCanvas.remove();
             virtualVideoCanvas = null;
+            virtualVideoCTX = null;
             virtualCanvas = null;
+            tensor2 = null;
+            prediction = null;
+            pixels = null;
+            cropped = null;
+            batchedImage = null;
+            He().endScope();
           }
           frame2++;
           let activeFaces = 0;
@@ -60042,17 +60054,6 @@ Manifest JSON has weights with names: ${allManifestWeightNames.join(", ")}.`);
         alert(error);
       }
     }
-    if (prediction) {
-      await prediction.dispose();
-    }
-    virtualVideoCanvas = null;
-    virtualVideoCTX = null;
-    virtualCanvas = null;
-    tensor2 = null;
-    prediction = null;
-    pixels = null;
-    cropped = null;
-    batchedImage = null;
     camera.drawCtx();
     if (faces && faces.length > 0) {
       camera.drawResults(faces, true, true);

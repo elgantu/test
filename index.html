@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="css/player.css">
     <link rel="stylesheet" href="css/wss_player.css">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 
 <body>
@@ -112,8 +113,87 @@
             </div>
         </div>
     </section>
+    <div class="container p-5">
+        <h2>Посекундный график видео индексов внимательности</h2>
+        <small>На какой секунде просмотра видео у пользователя начал стремиться к нулю индекс Внимательности</small>
+        <div id="chart"></div>
+    </div>
+    <div class="container p-5">
+        <h2>Секунда видео, срок изменения индекса и значение индекс внимательности</h2>
+        <small>На какой секунде видео у пользователя начал стремиться к нулю индекс Внимательности и на какой срок это произошло в сек.</small>
+        <div id="chart2"></div>
+    </div>
+    <script>
+        var options = {
+            series: [{
+                name: 'Индекс внимательности',
+                data: []
+            }],
+            chart: {
+                height: 350,
+                type: 'area'
+            },
+            dataLabels: {
+                enabled: false
+            },
+            yaxis: {
+                title: {
+                    text: 'Индекс в %'
+                }
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+        };
 
-    <script src="videojs/bundle.js?v=0.8.0">
+        var options2 = {
+            series: [{
+                name: 'Индекс внимательности',
+                type: 'line',
+                data: [0, 1, 2]
+            }, {
+                name: 'Время отвлеченности',
+                type: 'column',
+                data: [1, 20, 30, 40, 50, 100, 800, 900, 343, 20]
+            }],
+            tooltip: {
+                enabled: true,
+                y: {
+                    formatter: undefined,
+                    title: {
+                        formatter: (seriesName) => seriesName,
+                    },
+                },
+            },
+            chart: {
+                height: 350,
+                type: 'line',
+                stacked: false,
+            },
+            yaxis: {
+                title: {
+                    text: 'Индекс в % , время отвлеченности в сек.'
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+        };
+
+
+
+        window.charts = {
+            chart1: new ApexCharts(document.querySelector("#chart"), options),
+            chart2: new ApexCharts(document.querySelector("#chart2"), options2)
+        }
+        window.charts.chart1.render();
+        window.charts.chart2.render();
+        console.log(chart)
+    </script>
+    <script src="videojs/bundle.js">
     </script>
     <script src="videojs/videojs.js">
     </script>

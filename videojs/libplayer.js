@@ -1,5 +1,21 @@
 (() => {
 
+    window.currentVideoTimeWithAttention = []
+    const countElementInArray = (array,element) => {
+        let count = 0;
+
+        for (let i = 0; i < array.length; i += 1) {
+            if (array[i] === element) {
+                count += 1;
+            }
+        }
+        return count
+    }
+
+    function byField(field) {
+        return (a, b) => a[field] > b[field] ? -1 : 1;
+      }
+
     window.WSSP = async function WSSP(initialData) {
 
         if (!initialData) {
@@ -23,9 +39,11 @@
                 this.indexesAttention = [];
                 this.currentSecond = 0;
                 this.seconds = 0;
+                this.secondsPlay = 0;
             }
 
             async pausePlay() {
+                console.log(323)
                 Player.pause();
             }
 
@@ -137,9 +155,9 @@
 
                                 if (elementIndexAttention) {
                                     if (PC.indexesAttention.length > 0) {
-                                        if(PC.seconds > PC.currentSecond){
-                                        PC.currentSecond = PC.seconds
-                                        elementIndexAttention.innerHTML = Math.floor(100 / Number(PC.indexesAttention.length) * Number(PC.indexesAttention.filter(index => index == 1).length))
+                                        if (PC.seconds > PC.currentSecond) {
+                                            PC.currentSecond = PC.seconds
+                                            elementIndexAttention.innerHTML = Math.floor(100 / Number(PC.indexesAttention.length) * Number(PC.indexesAttention.filter(index => index == 1).length))
                                         }
                                     }
                                 }
@@ -184,6 +202,48 @@
 
                     }
 
+                    // if (initialData.faceDetectorPlayPauseWebcam) {
+                    //     if (!PC.videoStop) {
+                    //         if (index.attention) {
+                    //             if (!PC.videoPlaying && PC.faceDetectorActive) {
+                    //                 PC.startPlay()
+                    //                 PC.videoPlaying = true;
+                    //             }
+                    //         }
+                    //         if (!index.attention) {
+                    //             if (PC.videoPlaying && PC.faceDetectorActive) {
+                    //                 PC.pausePlay()
+                    //                 PC.videoPlaying = false;
+                    //             }
+                    //         }
+                    //     }
+                    // }
+
+                    // PC.faceDetectorActive = true
+
+                    if (index) {
+                        const time = Math.round(Player.currentTime())
+                        if (window.currentVideoTimeWithAttention.length < 1) {
+                            window.currentVideoTimeWithAttention.push({
+                                time: time,
+                                attentions: [index.attention]
+                            })
+                            return;
+                        }
+                        if (!window.currentVideoTimeWithAttention.find(el => el.time === time)) {
+                            window.currentVideoTimeWithAttention.push({
+                                time: time, attentions: [
+                                    index.attention
+                                ]
+                            })
+                            return
+                        } else {
+                            window.currentVideoTimeWithAttention.find(el => el.time === time).attentions.push(index.attention)
+                        }
+                    }
+                }
+
+                function onSecondIndex(index) {
                     if (initialData.faceDetectorPlayPauseWebcam) {
                         if (!PC.videoStop) {
                             if (index.attention) {
@@ -200,12 +260,7 @@
                             }
                         }
                     }
-
                     PC.faceDetectorActive = true
-                }
-
-                function onSecondIndex(index) {
-                    console.log(index)
                 }
 
                 const canvas = document.getElementById(initialData.canvasWebcamElementId)
@@ -307,6 +362,25 @@
             window.destroyFaceDetector()
             PC.videoPlayingFromButton = false
             PC.videoPlaying = false
+            PC.faceDetectorActive = false
+            const data = []
+            window.currentVideoTimeWithAttention.map((element) => {
+                const countActiveAttention = countElementInArray(element.attentions, 1)
+                const procent = Math.round(100 / element.attentions.length * countActiveAttention)
+                data.push({x:element.time, y:procent})
+            })
+
+            data.sort((prev, next) => prev.x - next.x);
+
+            console.log(data)
+
+            window.charts.chart1.updateSeries([{
+                data: data
+            }])
+        })
+
+        Player.on('timeupdate', () => {
+            PC.secondsPlay = Math.round(Player.currentTime())
         })
 
         const interval = setInterval(() => {

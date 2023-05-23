@@ -1,5 +1,5 @@
 WSSP({
-    video_url: 'https://elgantu.github.io/bundle/video2.mp4',
+    video_url: 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4',
     playerElement: 'player-preview',
     faceDetector: false,
     faceDetectorPlayPause: false,

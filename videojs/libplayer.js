@@ -262,7 +262,7 @@
 
                     }
 
-                    if (index.presence) {
+                    if (!index.presence) {
 
                         if (PC.videoPlaying && PC.faceDetectorActive) {
                             PC.pausePlay()

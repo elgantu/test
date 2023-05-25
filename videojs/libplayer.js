@@ -244,22 +244,34 @@
                 }
 
                 function onSecondIndex(index) {
-                    if (initialData.faceDetectorPlayPauseWebcam) {
-                        if (!PC.videoStop) {
-                            if (index.attention) {
-                                if (!PC.videoPlaying && PC.faceDetectorActive) {
-                                    PC.startPlay()
-                                    PC.videoPlaying = true;
-                                }
-                            }
-                            if (!index.attention) {
-                                if (PC.videoPlaying && PC.faceDetectorActive) {
-                                    PC.pausePlay()
-                                    PC.videoPlaying = false;
-                                }
-                            }
-                        }
+                    if(!initialData.faceDetectorPlayPauseWebcam){
+                        return
                     }
+
+                    if(PC.videoStop){
+                        return
+                    }
+
+                    if (index.attention > 10) {
+
+                        if (!PC.videoPlaying && PC.faceDetectorActive) {
+                            PC.startPlay()
+                            PC.videoPlaying = true;
+                            return
+                        }
+
+                    }
+
+                    if (index.attention < 11) {
+
+                        if (PC.videoPlaying && PC.faceDetectorActive) {
+                            PC.pausePlay()
+                            PC.videoPlaying = false;
+                            return;
+                        }
+
+                    }
+
                     PC.faceDetectorActive = true
                 }
 
@@ -282,6 +294,7 @@
                     }
 
                 }, 100)
+
                 return true
             }
 

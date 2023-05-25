@@ -252,7 +252,7 @@
                         return
                     }
 
-                    if (index.attention > 10) {
+                    if (index.presence) {
 
                         if (!PC.videoPlaying && PC.faceDetectorActive) {
                             PC.startPlay()
@@ -262,7 +262,7 @@
 
                     }
 
-                    if (index.attention < 11) {
+                    if (index.presence) {
 
                         if (PC.videoPlaying && PC.faceDetectorActive) {
                             PC.pausePlay()
